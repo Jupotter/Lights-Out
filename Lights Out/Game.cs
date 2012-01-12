@@ -207,14 +207,29 @@ namespace Lights_Out
                     player.Move(1, 0);
                     break;
                 case 'd':
-                    Light l = new Light(10);
-                    Item i = new Item("torch", '%');
-                    i.SetLight(l);
-                    i.Drop(player.posX, player.posY, map);
+                    player.inventory.Draw(root);
+                    TCODConsole.flush();
+                    key = TCODConsole.waitForKeypress(true);
+                    Item i = player.inventory.GetAtLetter(key.Character);
+                    player.inventory.RemoveAtLetter(key.Character);
+                    if (i != null)
+                    {
+                        Light l = new Light(10);
+                        i.SetLight(l);
+                        i.Drop(player.posX, player.posY, map);
+                    }
                     break;
                 case 'g':
                     foreach (Item item in map.GetItemsAt(player.posX, player.posY))
+                    {
                         item.Get();
+                        player.inventory.Add(item);
+                    }
+                    break;
+                case 'i':
+                    player.inventory.Draw(root);
+                    TCODConsole.flush();
+                    TCODConsole.waitForKeypress(true);
                     break;
                 default:
                     break;

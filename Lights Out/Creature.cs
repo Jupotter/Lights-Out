@@ -13,8 +13,10 @@ namespace Lights_Out
         char tile;
         TCODColor color;
         Map currentMap;
-        Light light;
 
+        public Inventory inventory;
+
+        Light light;
         public Light Light
         { get { return light; } }
 
@@ -23,7 +25,15 @@ namespace Lights_Out
             this.tile = tile;
             this.color = color;
             currentMap = map;
-            
+            inventory = new Inventory();
+            inventory.Add(new Item("item1", '%'));
+            inventory.Add(new Item("item2", '%'));
+            inventory.Add(new Item("item3", '%'));
+            inventory.Add(new Item("item4", '%'));
+            inventory.Add(new Item("item5", '%'));
+            inventory.Add(new Item("item6", '%'));
+            inventory.RemoveAtLetter('c');
+
             light = new Light(20);
             PlaceAt(map.StartPosX, map.StartPosY);
         }

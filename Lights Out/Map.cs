@@ -39,7 +39,7 @@ namespace Lights_Out
 
         public void Draw(TCODConsole cons)
         {
-            cons.setForegroundColor(TCODColor.black);
+            cons.setForegroundColor(TCODColor.sepia);
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
                 {
@@ -59,12 +59,10 @@ namespace Lights_Out
                     int pl = Player.Light.IntensityAt(i, j);
                     intens = System.Math.Max(intens, pl);
 
-                    TCODColor back = new TCODColor();
+                    TCODColor color = cons.getCharForeground(i, j);
 
-                    back = back.Plus(TCODColor.orange);
-
-                    back.setValue((float)intens / 20);
-                    cons.setCharForeground(i, j, back);
+                    color.setValue((float)intens / 20);
+                    cons.setCharForeground(i, j, color);
                 }
         }
 
