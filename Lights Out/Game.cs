@@ -8,6 +8,10 @@ namespace Lights_Out
 {
     class Game
     {
+        static public bool ShowWall = false;
+        static public bool MonsterAI = true;
+        static public bool MonsterDamage = true;
+
         Map map;
         Player player;
         TCODConsole root = TCODConsole.root;
@@ -26,7 +30,7 @@ namespace Lights_Out
             {
                 int x, y;
                 gen.FindOpenSpot(out x, out y, map);
-                Monster m = new Monster('X', TCODColor.red, map, 20);
+                Monster m = new Monster('X', TCODColor.red, map, 50);
                 m.PlaceAt(x, y);
             }
         }
@@ -237,8 +241,6 @@ namespace Lights_Out
                     player.Inventory.RemoveAtLetter(key.Character, 1);
                     if (i != null)
                     {
-                        Light l = new Light(10);
-                        i.SetLight(l);
                         i.Drop(player.posX, player.posY, map);
                     }
                     break;
@@ -253,6 +255,25 @@ namespace Lights_Out
                     player.Inventory.Draw(root);
                     TCODConsole.flush();
                     TCODConsole.waitForKeypress(true);
+                    break;
+                case 'e':
+                    player.Inventory.Draw(root);
+                    TCODConsole.flush();
+                    key = TCODConsole.waitForKeypress(true);
+                    i = player.Inventory.GetAtLetter(key.Character);
+                    if (i != null)
+                    {
+                        player.Equip(i);
+                    }
+                    break;
+                case 'w':
+                    ShowWall = !ShowWall;
+                    break;
+                case 'a':
+                    MonsterAI = !MonsterAI;
+                    break;
+                case 'z':
+                    MonsterDamage = !MonsterDamage;
                     break;
                 default:
                     break;

@@ -13,8 +13,13 @@ namespace Lights_Out
     {
         public ItemState State;
         bool isLight;
+        public bool IsLight
+        { get { return isLight; } }
         
         Light light;
+        public Light Light
+        { get { return light; } }
+
         Map map;
 
         char tile;

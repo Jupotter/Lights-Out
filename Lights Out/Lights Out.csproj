@@ -48,14 +48,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Creature.cs" />
+    <Compile Include="Dijkstra.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="ItemsData.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGen.cs" />
     <Compile Include="Math.cs" />
     <Compile Include="Monster.cs" />
+    <Compile Include="MonsterAI.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

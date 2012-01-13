@@ -12,6 +12,7 @@ namespace Lights_Out
         public const int MAP_HEIGHT = 50;
 
         TCODMap tcodmap;
+        Dijkstra dijkstra;
         public int StartPosX;
         public int StartPosY;
 
@@ -23,6 +24,9 @@ namespace Lights_Out
 
         public TCODMap TCODMap
         { get { return tcodmap; } }
+        public Dijkstra Dijkstra
+        { get { return dijkstra; } }
+
 
         public Map()
         {
@@ -31,6 +35,7 @@ namespace Lights_Out
             monsters = new List<Monster>();
             items = new List<Item>();
             dead = new List<Monster>();
+            dijkstra = new Dijkstra(this);
 
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
@@ -68,7 +73,7 @@ namespace Lights_Out
 
                     TCODColor color = cons.getCharForeground(i, j);
 
-                    color.setValue((float)intens / 20);
+                    color.setValue((float)intens / 20 + (Game.ShowWall?0.1f:0f));
                     cons.setCharForeground(i, j, color);
                 }
         }
@@ -76,8 +81,16 @@ namespace Lights_Out
         public void Update()
         {
             dead.Clear();
+            dijkstra.Clear();
+            foreach (Light light in lights)
+            {
+                dijkstra.AddStartPos(light.PosX, light.PosY, 20 - light.IntensityAt(light.PosX, light.PosY));
+            }
+            dijkstra.ComputeDijkstra();
+
             foreach (Monster mons in monsters)
             {
+                mons.Act();
                 int intens = 0;
                 foreach (Light light in lights)
                 {

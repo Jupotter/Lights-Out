@@ -17,21 +17,33 @@ namespace Lights_Out
         { get { return light; } }
 
 
+        Item equiped;
+
         public Player(Map map)
             : base('@', TCODColor.green, map)
         {
-            light = new Light(20);
+            equiped = null;
+            light = new Light(0);
             inventory = new Inventory();
-            inventory.Add(new Item("item1", '%', true));
-            inventory.Add(new Item("item2", '%', false));
-            inventory.Add(new Item("item3", '%', false));
-            inventory.Add(new Item("item4", '%', false));
-            inventory.Add(new Item("item5", '%', false));
-            inventory.Add(new Item("item6", '%', false));
-            inventory.Add(new Item("item1", '%', true));
-            inventory.Add(new Item("item1", '%', true));
-            inventory.Add(new Item("item1", '%', true));
-            inventory.Add(new Item("item6", '%', false));
+            for (int i = 0; i < 10; i++)
+            {
+                inventory.Add(new ItemsData.WeakTorch());
+            }
+            inventory.Add(new ItemsData.TorchLight());
+        }
+
+        public void Equip(Item i)
+        {
+            currentMap.RemoveLight(light);
+            equiped = i;
+            if (i.IsLight)
+                setLight(i.Light);
+        }
+
+        void setLight(Light light)
+        {
+            this.light = light;
+            light.PlaceAt(posX, posY, currentMap);
         }
 
         public override bool PlaceAt(int x, int y)
