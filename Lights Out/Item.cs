@@ -20,7 +20,7 @@ namespace Lights_Out
         public Light Light
         { get { return light; } }
 
-        Map map;
+        protected Map map;
 
         char tile;
         int posX, posY;
@@ -48,6 +48,11 @@ namespace Lights_Out
             this.tile = tile;
             this.stack = stack;
             isLight = false;
+        }
+
+        public void SetMap(Map map)
+        {
+            this.map = map;
         }
 
         public void SetLight(Light light)
@@ -84,6 +89,19 @@ namespace Lights_Out
         public void Draw(TCODConsole cons)
         {
             cons.putChar(posX, posY, (int)tile);
+        }
+
+        public override string ToString()
+        {
+            string plus = "";
+            if (isLight)
+                plus = String.Format(" ({0})", light.ToString());
+            return String.Format("{0}{1}", name, plus);
+        }
+
+        public virtual void Use()
+        {
+            return;
         }
     }
 }

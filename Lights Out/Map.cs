@@ -19,6 +19,7 @@ namespace Lights_Out
         List<Monster> dead;
         List<Monster> monsters;
         List<Light> lights;
+        List<Light> deadLights;
         List<Item> items;
         public Player Player;
 
@@ -35,6 +36,7 @@ namespace Lights_Out
             monsters = new List<Monster>();
             items = new List<Item>();
             dead = new List<Monster>();
+            deadLights = new List<Light>();
             dijkstra = new Dijkstra(this);
 
             for (int i = 0; i < MAP_WIDTH; i++)
@@ -62,20 +64,26 @@ namespace Lights_Out
                         mons.Draw(cons);
                     }
 
-                    int intens = 0;
-                    foreach (Light light in lights)
-                    {
-                        int t = light.IntensityAt(i, j);
-                        intens = System.Math.Max(intens, t);
-                    }
-                    int pl = Player.Light.IntensityAt(i, j);
-                    intens = System.Math.Max(intens, pl);
+                    int intens = IntensityAt(i, j);
 
                     TCODColor color = cons.getCharForeground(i, j);
-
-                    color.setValue((float)intens / 20 + (Game.ShowWall?0.1f:0f));
+                    float value = (float)intens / 20 + (Game.ShowWall ? 0.1f : 0f);
+                    color.setValue(System.Math.Min(value, 1f));
                     cons.setCharForeground(i, j, color);
                 }
+        }
+
+        public int IntensityAt(int X, int Y)
+        {
+            int intens = 0;
+            foreach (Light light in lights)
+            {
+                int t = light.IntensityAt(X, Y);
+                intens = System.Math.Max(intens, t);
+            }
+            int pl = Player.Light.IntensityAt(X, Y);
+            intens = System.Math.Max(intens, pl);
+            return intens;
         }
 
         public void Update()
@@ -91,20 +99,21 @@ namespace Lights_Out
             foreach (Monster mons in monsters)
             {
                 mons.Act();
-                int intens = 0;
-                foreach (Light light in lights)
-                {
-                    int t = light.IntensityAt(mons.posX, mons.posY);
-                    intens = System.Math.Max(intens, t);
-                }
-                int pl = Player.Light.IntensityAt(mons.posX, mons.posY);
-                intens = System.Math.Max(intens, pl);
+                int intens = IntensityAt(mons.posX, mons.posY);
                 if (intens > 0)
                     mons.TakeDamage(intens);
+            }
+            foreach (Light light in lights)
+            {
+                light.Update();
             }
             foreach (Monster mons in dead)
             {
                 monsters.Remove(mons);
+            }
+            foreach (Light light in deadLights)
+            {
+                lights.Remove(light);
             }
         }
 
@@ -120,6 +129,11 @@ namespace Lights_Out
             return false;
         }
 
+        public Monster ContainMonster(int X, int Y)
+        {
+            return monsters.Find(m => m.posX == X && m.posY == Y);
+        }
+
         public void AddLight(Light light)
         {
             lights.Add(light);
@@ -127,12 +141,12 @@ namespace Lights_Out
 
         public void RemoveLight(Light light)
         {
-            lights.Remove(light);
+            deadLights.Add(light);
         }
 
         public void RemoveLighstAt(int X, int Y)
         {
-            lights.RemoveAll(l => l.PosX == X && l.PosY == Y);
+            deadLights.AddRange(lights.FindAll(l => l.PosX == X && l.PosY == Y));
         }
 
         public void AddItem(Item item)

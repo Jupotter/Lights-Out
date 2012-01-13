@@ -15,12 +15,13 @@ namespace Lights_Out
         Map map;
         Player player;
         TCODConsole root = TCODConsole.root;
+        MapGen gen;
 
         public bool Exit = false;
 
         public Game()
         {
-            MapGen gen = new MapGen();
+            gen = new MapGen();
             gen.Generate(5, out map);
             player = new Player(map);
             map.Player = player;
@@ -28,11 +29,16 @@ namespace Lights_Out
 
             for (int i = 0; i < 10; i++)
             {
-                int x, y;
-                gen.FindOpenSpot(out x, out y, map);
-                Monster m = new Monster('X', TCODColor.red, map, 50);
-                m.PlaceAt(x, y);
+                AddMonster();
             }
+        }
+
+        public void AddMonster()
+        {
+            int x, y;
+            gen.FindOpenSpot(out x, out y, map);
+            Monster m = new Monster('X', TCODColor.red, map, 50);
+            m.PlaceAt(x, y);
         }
 
         public void Draw()
@@ -44,13 +50,21 @@ namespace Lights_Out
 
         public void Update()
         {
-            TCODKey key = TCODConsole.waitForKeypress(true);
-            HandleKeyPress(key);
             map.Update();
+            bool endturn;
+            do
+            {
+                TCODKey key = TCODConsole.waitForKeypress(true);
+                endturn = HandleKeyPress(key);
+                Draw();
+            } while (!endturn && ! Exit);
+            if (map.IntensityAt(player.posX, player.posY) == 0)
+                Exit = true;
         }
 
-        public void HandleKeyPress(TCODKey key)
+        public bool HandleKeyPress(TCODKey key)
         {
+            bool endTurn = false;
             #region switch (key.KeyCode)
             switch (key.KeyCode)
             {
@@ -58,29 +72,38 @@ namespace Lights_Out
                     break;
                 case TCODKeyCode.KeypadOne:
                     player.Move(-1, 1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadTwo:
                     player.Move(0, 1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadThree:
                     player.Move(1, 1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadFour:
                     player.Move(-1, 0);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadFive:
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadSix:
                     player.Move(1, 0);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadSeven:
                     player.Move(-1, -1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadEight:
                     player.Move(0, -1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadNine:
                     player.Move(1, -1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.KeypadAdd:
                     break;
@@ -93,18 +116,23 @@ namespace Lights_Out
                 case TCODKeyCode.KeypadEnter:
                     break;
                 case TCODKeyCode.KeypadDecimal:
+                    endTurn = true;
                     break;
                 case TCODKeyCode.Left:
                     player.Move(-1, 0);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.Right:
                     player.Move(1, 0);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.Up:
                     player.Move(0, -1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.Down:
                     player.Move(0, 1);
+                    endTurn = true;
                     break;
                 case TCODKeyCode.Alt:
                     break;
@@ -210,27 +238,38 @@ namespace Lights_Out
                 #region Movement
                 case 'h':
                     player.Move(-1, 0);
+                    endTurn = true;
                     break;
                 case 'j':
                     player.Move(0, 1);
+                    endTurn = true;
                     break;
                 case 'k':
                     player.Move(0, -1);
+                    endTurn = true;
                     break;
                 case 'l':
                     player.Move(1, 0);
+                    endTurn = true;
                     break;
                 case 'y':
                     player.Move(-1, -1);
+                    endTurn = true;
                     break;
                 case 'u':
                     player.Move(1, -1);
+                    endTurn = true;
                     break;
                 case 'b':
                     player.Move(-1, 1);
+                    endTurn = true;
                     break;
                 case 'n':
                     player.Move(1, 1);
+                    endTurn = true;
+                    break;
+                case '.':
+                    endTurn = true;
                     break;
                 #endregion
                 case 'd':
@@ -250,6 +289,7 @@ namespace Lights_Out
                         item.Get();
                         player.Inventory.Add(item);
                     }
+                    endTurn = true;
                     break;
                 case 'i':
                     player.Inventory.Draw(root);
@@ -265,6 +305,18 @@ namespace Lights_Out
                     {
                         player.Equip(i);
                     }
+                    endTurn = true;
+                    break;
+                case 'r':
+                    player.Inventory.Draw(root);
+                    TCODConsole.flush();
+                    key = TCODConsole.waitForKeypress(true);
+                    i = player.Inventory.GetAtLetter(key.Character);
+                    if (i != null)
+                    {
+                        i.Use();
+                    }
+                    endTurn = true;
                     break;
                 case 'w':
                     ShowWall = !ShowWall;
@@ -279,6 +331,7 @@ namespace Lights_Out
                     break;
             }
             #endregion
+            return endTurn;
         }
     }
 }

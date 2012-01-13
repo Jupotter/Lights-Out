@@ -15,9 +15,11 @@ namespace Lights_Out
         InvStruct[] items;
         SortedList<int, string> taken;
         int firstFree;
+        Player client;
 
-        public Inventory()
+        public Inventory(Player client)
         {
+            this.client = client;
             items = new InvStruct[CAPACITY];
             taken = new SortedList<int,string>();
             firstFree = 0;
@@ -42,6 +44,7 @@ namespace Lights_Out
 
         public bool Add(Item item)
         {
+            item.SetMap(client.currentMap);
             if (item.Stack)
             {
                 int i = taken.IndexOfValue(item.Name);
@@ -94,7 +97,7 @@ namespace Lights_Out
             int x = 2;
             foreach (int i in taken.Keys)
             {
-                temp.print(2, x, String.Format("{0} - {1} {2}", (char)(i + 97), items[i].num, items[i].item.Name));
+                temp.print(2, x, String.Format("{0} - {1}", (char)(i + 97), items[i].item.ToString()));
                 x++;
             }
             TCODConsole.blit(temp, 0, 0, 50, x + 2, cons, 0, 0);
