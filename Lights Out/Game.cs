@@ -9,8 +9,7 @@ namespace Lights_Out
     class Game
     {
         Map map;
-        Creature player;
-        Light l;
+        Player player;
         TCODConsole root = TCODConsole.root;
 
         public bool Exit = false;
@@ -19,8 +18,17 @@ namespace Lights_Out
         {
             MapGen gen = new MapGen();
             gen.Generate(5, out map);
-            player = new Creature('@', TCODColor.green, map);
+            player = new Player(map);
             map.Player = player;
+            player.PlaceAt(map.StartPosX, map.StartPosY);
+
+            for (int i = 0; i < 10; i++)
+            {
+                int x, y;
+                gen.FindOpenSpot(out x, out y, map);
+                Monster m = new Monster('X', TCODColor.red, map, 20);
+                m.PlaceAt(x, y);
+            }
         }
 
         public void Draw()
@@ -34,6 +42,7 @@ namespace Lights_Out
         {
             TCODKey key = TCODConsole.waitForKeypress(true);
             HandleKeyPress(key);
+            map.Update();
         }
 
         public void HandleKeyPress(TCODKey key)
@@ -194,6 +203,7 @@ namespace Lights_Out
             #region switch (key.Character)
             switch (key.Character)
             {
+                #region Movement
                 case 'h':
                     player.Move(-1, 0);
                     break;
@@ -206,12 +216,25 @@ namespace Lights_Out
                 case 'l':
                     player.Move(1, 0);
                     break;
+                case 'y':
+                    player.Move(-1, -1);
+                    break;
+                case 'u':
+                    player.Move(1, -1);
+                    break;
+                case 'b':
+                    player.Move(-1, 1);
+                    break;
+                case 'n':
+                    player.Move(1, 1);
+                    break;
+                #endregion
                 case 'd':
-                    player.inventory.Draw(root);
+                    player.Inventory.Draw(root);
                     TCODConsole.flush();
                     key = TCODConsole.waitForKeypress(true);
-                    Item i = player.inventory.GetAtLetter(key.Character);
-                    player.inventory.RemoveAtLetter(key.Character);
+                    Item i = player.Inventory.GetAtLetter(key.Character);
+                    player.Inventory.RemoveAtLetter(key.Character, 1);
                     if (i != null)
                     {
                         Light l = new Light(10);
@@ -223,11 +246,11 @@ namespace Lights_Out
                     foreach (Item item in map.GetItemsAt(player.posX, player.posY))
                     {
                         item.Get();
-                        player.inventory.Add(item);
+                        player.Inventory.Add(item);
                     }
                     break;
                 case 'i':
-                    player.inventory.Draw(root);
+                    player.Inventory.Draw(root);
                     TCODConsole.flush();
                     TCODConsole.waitForKeypress(true);
                     break;

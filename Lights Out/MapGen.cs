@@ -26,14 +26,20 @@ namespace Lights_Out
             GenRoom(root, ref map);
             int x;
             int y;
+            FindOpenSpot(out x, out y, map);
+            map.SetStartPos(x, y);
+        }
+		
+        public void FindOpenSpot(out int x, out int y, Map map)
+        {
             do
             {
                 x = rand.getInt(1, Map.MAP_WIDTH - 2);
                 y = rand.getInt(1, Map.MAP_HEIGHT - 2);
             } while (map[x, y]);
-            map.SetStartPos(x, y);
+            
         }
-		
+
 		private void GenRoom(TCODBsp bsp, ref Map map)
 		{
 			if (bsp.isLeaf())

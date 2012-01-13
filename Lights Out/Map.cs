@@ -15,10 +15,11 @@ namespace Lights_Out
         public int StartPosX;
         public int StartPosY;
 
-        List<Creature> creatures;
+        List<Monster> dead;
+        List<Monster> monsters;
         List<Light> lights;
         List<Item> items;
-        public Creature Player;
+        public Player Player;
 
         public TCODMap TCODMap
         { get { return tcodmap; } }
@@ -27,8 +28,9 @@ namespace Lights_Out
         {
             tcodmap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
             lights = new List<Light>();
-            creatures = new List<Creature>();
+            monsters = new List<Monster>();
             items = new List<Item>();
+            dead = new List<Monster>();
 
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
@@ -50,6 +52,11 @@ namespace Lights_Out
                         item.Draw(cons);
                     }
 
+                    foreach (Monster mons in monsters.FindAll(item => item.posX == i && item.posY == j))
+                    {
+                        mons.Draw(cons);
+                    }
+
                     int intens = 0;
                     foreach (Light light in lights)
                     {
@@ -68,6 +75,24 @@ namespace Lights_Out
 
         public void Update()
         {
+            dead.Clear();
+            foreach (Monster mons in monsters)
+            {
+                int intens = 0;
+                foreach (Light light in lights)
+                {
+                    int t = light.IntensityAt(mons.posX, mons.posY);
+                    intens = System.Math.Max(intens, t);
+                }
+                int pl = Player.Light.IntensityAt(mons.posX, mons.posY);
+                intens = System.Math.Max(intens, pl);
+                if (intens > 0)
+                    mons.TakeDamage(intens);
+            }
+            foreach (Monster mons in dead)
+            {
+                monsters.Remove(mons);
+            }
         }
 
         public bool SetStartPos(int X, int Y)
@@ -117,9 +142,14 @@ namespace Lights_Out
             return items.FindAll(i => i.PosX == X && i.PosY == Y);
         }
 
-        public void AddCreature(Creature creature)
+        public void AddCreature(Monster monster)
         {
-            creatures.Add(creature);
+            monsters.Add(monster);
+        }
+
+        public void RemoveCreature(Monster monster)
+        {
+            dead.Add(monster);
         }
 
         public bool this[int x, int y]

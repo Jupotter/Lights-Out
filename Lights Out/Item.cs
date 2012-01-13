@@ -13,6 +13,7 @@ namespace Lights_Out
     {
         public ItemState State;
         bool isLight;
+        
         Light light;
         Map map;
 
@@ -32,11 +33,15 @@ namespace Lights_Out
         string name;
         public string Name
         { get { return name; } }
+        bool stack;
+        public bool Stack
+        { get { return stack; } }
 
-        public Item(string name, char tile)
+        public Item(string name, char tile,bool stack)
         {
             this.name = name;
             this.tile = tile;
+            this.stack = stack;
             isLight = false;
         }
 
