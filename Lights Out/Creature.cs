@@ -12,7 +12,7 @@ namespace Lights_Out
         public int posY;
         char tile;
         TCODColor color;
-        protected Map currentMap;
+        public Map currentMap;
 
         public Creature(char tile, TCODColor color, Map map)
         {

@@ -23,13 +23,17 @@ namespace Lights_Out
             : base('@', TCODColor.green, map)
         {
             equiped = null;
-            light = new Light(0);
-            inventory = new Inventory();
-            for (int i = 0; i < 10; i++)
+            light = new Light(0,0,0);
+            inventory = new Inventory(this);
+            inventory.Add(new ItemsData.TorchLight());
+            Equip(Inventory.GetAtLetter('a'));
+            for (int i = 0; i < 5; i++)
             {
                 inventory.Add(new ItemsData.WeakTorch());
             }
-            inventory.Add(new ItemsData.TorchLight());
+            inventory.Add(new ItemsData.FlashScroll());
+            inventory.Add(new ItemsData.FlashScroll());
+            inventory.Add(new ItemsData.FlashScroll());
         }
 
         public void Equip(Item i)

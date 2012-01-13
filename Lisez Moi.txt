@@ -1,0 +1,17 @@
+Explorez le Donjon, armé seulement de vos torches et de votre courage.
+
+Les ennemis sont attirés par la lumière, mais aussi blessés par elle. Plus ils sont éclairés, plus ils sont blessés.
+
+Attention, les torches ne dureront pas a jamais. Si la lumière s'éteint, c'est Game Over
+
+Contrôles:
+Mouvements: vi-keys(hjkl), touches fléchées, clavier numérique
+Inventaire: i
+Lacher un objet: d
+Ramasser: g
+Lire: r
+
+Commandes de debug:
+Arreter l'IA des monstres: a
+Arreter les blessures de monstres: z
+Afficher toute la carte: w
