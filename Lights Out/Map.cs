@@ -83,7 +83,7 @@ namespace Lights_Out
                     int intens = IntensityAt(i, j);
 
                     TCODColor color = cons.getCharForeground(i, j);
-                    float value = (float)intens / 20 + (Game.ShowWall ? 0.1f : 0f);
+                    float value = (float)intens / 20 + (Game.ShowWall ? 0.05f : 0f);
                     color.setValue(System.Math.Min(value, 1f));
                     cons.setCharForeground(i, j, color);
                 }
@@ -110,6 +110,8 @@ namespace Lights_Out
             {
                 dijkstra.AddStartPos(light.PosX, light.PosY, 20 - light.IntensityAt(light.PosX, light.PosY));
             }
+            dijkstra.AddStartPos(Player.Light.PosX, Player.Light.PosY, 20 - Player.Light.IntensityAt(Player.Light.PosX, Player.Light.PosY));
+
             dijkstra.ComputeDijkstra();
 
             foreach (Monster mons in monsters)
@@ -123,6 +125,7 @@ namespace Lights_Out
             {
                 light.Update();
             }
+            Player.Light.Update();
             foreach (Monster mons in dead)
             {
                 monsters.Remove(mons);
@@ -163,6 +166,7 @@ namespace Lights_Out
 
         public void RemoveLight(Light light)
         {
+            light.RemoveFromMap();
             deadLights.Add(light);
         }
 

@@ -28,7 +28,7 @@ namespace Lights_Out
 
         public Dungeon(Game game)
         {
-            gen = new MapGen(245);
+            gen = new MapGen();
             this.game = game;
             mapList = new List<Map>();
             depth = 0;

@@ -14,6 +14,8 @@ namespace Lights_Out
         TCODMap tcodmap;
         int elapsed;
 
+        bool isOnMap;
+
         TCODColor color;
         public TCODColor Color
         { get { return color; } }
@@ -60,7 +62,7 @@ namespace Lights_Out
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
             {
-                if (map != currentMap)
+                if (!isOnMap || map != currentMap)
                 {
                     if (currentMap != null)
                         currentMap.RemoveLight(this);
@@ -72,6 +74,7 @@ namespace Lights_Out
                 posX = x;
                 posY = y;
                 tcodmap.computeFov(posX, posY, radius, true);
+                isOnMap = true;
 
                 return true;
             }
@@ -97,6 +100,11 @@ namespace Lights_Out
         public override string ToString()
         {
             return String.Format("{0}:{1}:{2}/{3}", intensity, radius, elapsed, capacity);
+        }
+
+        internal void RemoveFromMap()
+        {
+            isOnMap = false;
         }
     }
 }

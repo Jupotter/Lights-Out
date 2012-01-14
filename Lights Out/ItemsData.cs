@@ -14,7 +14,7 @@ namespace Lights_Out
             public TorchLight()
                 : base("Torch", '|', false)
             {
-                SetLight(new Light(20, 10, 100));
+                SetLight(new Light(20, 10, 500));
             }
 
             static public Item Create() { return new TorchLight(); }
@@ -27,7 +27,7 @@ namespace Lights_Out
             public WeakTorch()
                 : base("Weak Torch", 'i', false)
             {
-                SetLight(new Light(10, 5, 100));
+                SetLight(new Light(10, 5, 500));
             }
 
             static public Item Create() { return new WeakTorch(); }
@@ -43,7 +43,7 @@ namespace Lights_Out
 
             public override void Use()
             {
-                Light l = new Light(100, 100, 1);
+                Light l = new Light(200, 200, 2);
                 l.PlaceAt(map.Player.posX, map.Player.posY, map);
             }
 
