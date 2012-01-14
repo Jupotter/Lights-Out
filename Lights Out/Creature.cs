@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using libtcod;
+﻿using libtcod;
 
 namespace Lights_Out
 {
@@ -14,19 +10,22 @@ namespace Lights_Out
         TCODColor color;
         public Map currentMap;
 
-        public Creature(char tile, TCODColor color, Map map)
+        public Creature(char tile, TCODColor color)
         {
             this.tile = tile;
             this.color = color;
-            currentMap = map;
             //PlaceAt(map.StartPosX, map.StartPosY);
         }
 
-        public virtual bool PlaceAt(int x, int y)
+        public virtual bool PlaceAt(int x, int y, Map map)
         {
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
             {
+                if (map != currentMap)
+                {
+                    currentMap = map;
+                }
                 posX = x;
                 posY = y;
                 return true;

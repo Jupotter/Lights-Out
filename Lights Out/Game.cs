@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using libtcod;
+﻿using libtcod;
 
 namespace Lights_Out
 {
@@ -12,10 +8,11 @@ namespace Lights_Out
         static public bool MonsterAI = true;
         static public bool MonsterDamage = true;
 
-        Map map;
+        Dungeon dungeon;
+        Map map { get { return dungeon.CurrentLevel; } }
         Player player;
         TCODConsole root = TCODConsole.root;
-        MapGen gen;
+        MapGen gen { get { return dungeon.Gen; } }
 
         int turnInDark = 0;
 
@@ -23,32 +20,35 @@ namespace Lights_Out
 
         public Game()
         {
-            gen = new MapGen(245);
-            gen.Generate(5, out map, this);
-            player = new Player(map);
+            dungeon = new Dungeon(this);
+
+            dungeon.GenNewLevel();
+            dungeon.CurrentDepth = 1;
+            
+
+            player = new Player(dungeon.CurrentLevel);
             map.Player = player;
-            player.PlaceAt(map.StartPosX, map.StartPosY);
+            player.PlaceAt(map.StartPosX, map.StartPosY, map);
 
             for (int i = 0; i < 10; i++)
             {
-                AddMonster();
+                AddMonster(map);
             }
         }
 
-        public void AddMonster()
+        public void AddMonster(Map map)
         {
             int x, y;
             do
                 gen.FindOpenSpot(out x, out y, map);
             while (Math.Distance_King(x, y, player.posX, player.posY) < 30);
             Monster m = new Monster('X', TCODColor.red, map, 50);
-            m.PlaceAt(x, y);
+            m.PlaceAt(x, y, map);
         }
 
         public void Draw()
         {
             map.Draw(root);
-            player.Draw(root);
             TCODConsole.flush();
         }
 
@@ -326,6 +326,16 @@ namespace Lights_Out
                         i.Use();
                         player.Inventory.RemoveAllAtLetter(key.Character);
                         endTurn = true;
+                    }
+                    break;
+                case '>':
+                    if (player.posX == map.Stair.PosX && player.posY == map.Stair.PosY)
+                    {
+                        dungeon.GoToMap(dungeon.CurrentDepth + 1, player);
+                        for (int n = 0; n < 10; n++)
+                        {
+                            AddMonster(map);
+                        }
                     }
                     break;
                 case 'w':

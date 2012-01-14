@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using libtcod;
 
 namespace Lights_Out
@@ -15,11 +12,12 @@ namespace Lights_Out
         MonsterAI ai;
 
         public Monster(char c, TCODColor color, Map map, int health)
-            : base(c, color, map)
+            : base(c, color)
         {
             this.health = health;
             map.AddCreature(this);
-            ai = new MonsterAI(this, map);
+            ai = new MonsterAI(this);
+            ai.SetMap(map);
         }
 
         public void TakeDamage(int dmg)
@@ -31,6 +29,19 @@ namespace Lights_Out
                 if (health <= 0)
                     currentMap.RemoveCreature(this);
             }
+        }
+
+        public override bool PlaceAt(int x, int y, Map map)
+        {
+            if (currentMap != map)
+            {
+                if (currentMap != null)
+                currentMap.RemoveCreature(this);
+                map.AddCreature(this);
+                ai.SetMap(map);
+            }
+            bool ret = base.PlaceAt(x, y, map);
+            return ret;
         }
 
         public void Act()

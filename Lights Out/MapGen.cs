@@ -1,4 +1,3 @@
-using System;
 using libtcod;
 
 namespace Lights_Out
@@ -28,6 +27,8 @@ namespace Lights_Out
             int y;
             FindOpenSpot(out x, out y, map);
             map.SetStartPos(x, y);
+            FindOpenSpot(out x, out y, map);
+            map.Stair = new Stairs(x, y);
             for (int i = 0; i < 20; i++)
             {
                 PlaceRandomItem(map);

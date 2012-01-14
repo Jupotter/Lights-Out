@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SMath = System.Math;
+﻿using SMath = System.Math;
 
 namespace Lights_Out
 {

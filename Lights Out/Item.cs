@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using libtcod;
 
 namespace Lights_Out
@@ -36,7 +33,10 @@ namespace Lights_Out
         public char Tile
         { get { return tile; } }
         public TCODColor Color
-        { get { return color == null ? TCODColor.white : color; } }
+        {
+            get { return color == null ? TCODColor.white : color; }
+            set { color = value; }
+        }
 
         string name;
         public string Name
@@ -52,11 +52,6 @@ namespace Lights_Out
             this.stack = stack;
             isLight = false;
             lightOn = false;
-        }
-
-        public void SetMap(Map map)
-        {
-            this.map = map;
         }
 
         public void SetMap(Map map)
@@ -107,6 +102,7 @@ namespace Lights_Out
         public void Draw(TCODConsole cons)
         {
             cons.putChar(posX, posY, (int)tile);
+            cons.setCharForeground(posX, posY, Color);
         }
 
         public override string ToString()

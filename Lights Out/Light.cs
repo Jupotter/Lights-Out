@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using libtcod;
 
 namespace Lights_Out
@@ -65,6 +62,8 @@ namespace Lights_Out
             {
                 if (map != currentMap)
                 {
+                    if (currentMap != null)
+                        currentMap.RemoveLight(this);
                     currentMap = map;
                     map.AddLight(this);
                     tcodmap = new TCODMap(Map.MAP_WIDTH, Map.MAP_HEIGHT);

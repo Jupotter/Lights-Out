@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using libtcod;
 
 namespace Lights_Out
@@ -12,6 +9,13 @@ namespace Lights_Out
         public const int MAP_HEIGHT = 50;
 
         Game game;
+        Stairs stair;
+
+        public Stairs Stair
+        {
+            get { return stair; }
+            set { stair = value; }
+        }
 
         TCODMap tcodmap;
         Dijkstra dijkstra;
@@ -68,6 +72,14 @@ namespace Lights_Out
                         mons.Draw(cons);
                     }
 
+                }
+
+            stair.Draw(cons);
+            Player.Draw(cons);
+
+            for (int i = 0; i < MAP_WIDTH; i++)
+                for (int j = 0; j < MAP_HEIGHT; j++)
+                {
                     int intens = IntensityAt(i, j);
 
                     TCODColor color = cons.getCharForeground(i, j);
@@ -114,7 +126,7 @@ namespace Lights_Out
             foreach (Monster mons in dead)
             {
                 monsters.Remove(mons);
-                game.AddMonster();
+                game.AddMonster(this);
             }
             foreach (Light light in deadLights)
             {

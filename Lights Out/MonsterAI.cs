@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using libtcod;
-
+﻿
 namespace Lights_Out
 {
     class MonsterAI
@@ -12,9 +7,13 @@ namespace Lights_Out
         Map source;
         Monster client;
 
-        public MonsterAI(Monster client, Map map)
+        public MonsterAI(Monster client)
         {
             this.client = client;
+        }
+
+        public void SetMap(Map map)
+        {
             this.source = map;
             this.map = map.Dijkstra;
         }
@@ -40,7 +39,7 @@ namespace Lights_Out
                     {
                         Monster mons = source.ContainMonster(next.X, next.Y);
                         if (mons == null)
-                            client.PlaceAt(next.X, next.Y);
+                            client.PlaceAt(next.X, next.Y, client.currentMap);
                     }
                 }
             }

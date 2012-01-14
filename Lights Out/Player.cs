@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using libtcod;
+﻿using libtcod;
 
 namespace Lights_Out
 {
@@ -20,8 +16,9 @@ namespace Lights_Out
         Item equiped;
 
         public Player(Map map)
-            : base('@', TCODColor.green, map)
+            : base('@', TCODColor.green)
         {
+            currentMap = map;
             equiped = null;
             light = new Light(0,0,0);
             inventory = new Inventory(this);
@@ -38,6 +35,7 @@ namespace Lights_Out
 
         public void Equip(Item i)
         {
+            if (currentMap != null)
             currentMap.RemoveLight(light);
             equiped = i;
             if (i.IsLight)
@@ -50,9 +48,14 @@ namespace Lights_Out
             light.PlaceAt(posX, posY, currentMap);
         }
 
-        public override bool PlaceAt(int x, int y)
+        public override bool PlaceAt(int x, int y, Map map)
         {
-            bool ret = base.PlaceAt(x, y);
+            if (map != currentMap)
+            {
+                currentMap.Player = null;
+                map.Player = this;
+            }
+            bool ret = base.PlaceAt(x, y, map);
             if (ret)
                 light.PlaceAt(posX, posY, currentMap);
             return ret;
