@@ -1,4 +1,4 @@
-Explore the dugeon, armed only with your torches and your courage.
+Explore the dungeon, armed only with your torches and your courage.
 
 Ennemies are attracted by light, but also injured by it. The stronger it is, the more live they lose.
 

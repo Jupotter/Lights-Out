@@ -17,9 +17,9 @@ namespace Lights_Out
 			rand = new TCODRandom();
 		}
 
-        public void Generate(int level, out Map map)
+        public void Generate(int level, out Map map, Game game)
         {
-            map = new Map();
+            map = new Map(game);
             TCODBsp root = new TCODBsp(1, 1, Map.MAP_WIDTH - 2, Map.MAP_HEIGHT - 2);
             root.splitRecursive(rand, level, 3, 3, 1.5f, 1.5f);
             //map = new Map(80, 50, new TCODConsole(5, 5));
@@ -28,8 +28,23 @@ namespace Lights_Out
             int y;
             FindOpenSpot(out x, out y, map);
             map.SetStartPos(x, y);
+            for (int i = 0; i < 20; i++)
+            {
+                PlaceRandomItem(map);
+            }
         }
-		
+
+        public void PlaceRandomItem(Map map)
+        {
+            int x, y;
+            int n = rand.getInt(0, ItemsData.TotalWeight);
+            FindOpenSpot(out x, out y, map);
+            Item item = ItemsData.PickWeightedItem(n);
+            n = rand.getInt(0, 10);
+            item.SwitchLight(n == 0);
+            item.Drop(x, y, map);
+        }
+
         public void FindOpenSpot(out int x, out int y, Map map)
         {
             do

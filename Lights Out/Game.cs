@@ -6,7 +6,7 @@ using libtcod;
 
 namespace Lights_Out
 {
-    class Game
+    public class Game
     {
         static public bool ShowWall = false;
         static public bool MonsterAI = true;
@@ -17,12 +17,14 @@ namespace Lights_Out
         TCODConsole root = TCODConsole.root;
         MapGen gen;
 
+        int turnInDark = 0;
+
         public bool Exit = false;
 
         public Game()
         {
-            gen = new MapGen();
-            gen.Generate(5, out map);
+            gen = new MapGen(245);
+            gen.Generate(5, out map, this);
             player = new Player(map);
             map.Player = player;
             player.PlaceAt(map.StartPosX, map.StartPosY);
@@ -36,7 +38,9 @@ namespace Lights_Out
         public void AddMonster()
         {
             int x, y;
-            gen.FindOpenSpot(out x, out y, map);
+            do
+                gen.FindOpenSpot(out x, out y, map);
+            while (Math.Distance_King(x, y, player.posX, player.posY) < 30);
             Monster m = new Monster('X', TCODColor.red, map, 50);
             m.PlaceAt(x, y);
         }
@@ -50,7 +54,6 @@ namespace Lights_Out
 
         public void Update()
         {
-            map.Update();
             bool endturn;
             do
             {
@@ -58,8 +61,12 @@ namespace Lights_Out
                 endturn = HandleKeyPress(key);
                 Draw();
             } while (!endturn && ! Exit);
+            map.Update();
+            Draw();
             if (map.IntensityAt(player.posX, player.posY) == 0)
-                Exit = true;
+                if (turnInDark == 3)
+                    Exit = true;
+                else turnInDark++;
         }
 
         public bool HandleKeyPress(TCODKey key)
@@ -288,8 +295,8 @@ namespace Lights_Out
                     {
                         item.Get();
                         player.Inventory.Add(item);
+                        endTurn = true;
                     }
-                    endTurn = true;
                     break;
                 case 'i':
                     player.Inventory.Draw(root);
@@ -304,8 +311,8 @@ namespace Lights_Out
                     if (i != null)
                     {
                         player.Equip(i);
+                        endTurn = true;
                     }
-                    endTurn = true;
                     break;
                 case 'r':
                     player.Inventory.Draw(root);
@@ -315,8 +322,9 @@ namespace Lights_Out
                     if (i != null)
                     {
                         i.Use();
+                        player.Inventory.RemoveAllAtLetter(key.Character);
+                        endTurn = true;
                     }
-                    endTurn = true;
                     break;
                 case 'w':
                     ShowWall = !ShowWall;

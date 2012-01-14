@@ -11,6 +11,8 @@ namespace Lights_Out
         public const int MAP_WIDTH  = 80;
         public const int MAP_HEIGHT = 50;
 
+        Game game;
+
         TCODMap tcodmap;
         Dijkstra dijkstra;
         public int StartPosX;
@@ -29,8 +31,10 @@ namespace Lights_Out
         { get { return dijkstra; } }
 
 
-        public Map()
+        public Map(Game game)
         {
+            this.game = game;
+
             tcodmap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
             lights = new List<Light>();
             monsters = new List<Monster>();
@@ -110,6 +114,7 @@ namespace Lights_Out
             foreach (Monster mons in dead)
             {
                 monsters.Remove(mons);
+                game.AddMonster();
             }
             foreach (Light light in deadLights)
             {
@@ -132,6 +137,11 @@ namespace Lights_Out
         public Monster ContainMonster(int X, int Y)
         {
             return monsters.Find(m => m.posX == X && m.posY == Y);
+        }
+
+        public Light ContainLight(int X, int Y)
+        {
+            return lights.Find(m => m.PosX == X && m.PosY == Y);
         }
 
         public void AddLight(Light light)

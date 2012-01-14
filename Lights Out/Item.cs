@@ -15,6 +15,9 @@ namespace Lights_Out
         bool isLight;
         public bool IsLight
         { get { return isLight; } }
+        bool lightOn;
+        public bool LightOn
+        { get { return lightOn; } }
         
         Light light;
         public Light Light
@@ -48,6 +51,7 @@ namespace Lights_Out
             this.tile = tile;
             this.stack = stack;
             isLight = false;
+            lightOn = false;
         }
 
         public void SetMap(Map map)
@@ -59,6 +63,15 @@ namespace Lights_Out
         {
             this.light = light;
             isLight = true;
+            lightOn = true;
+        }
+
+        public void SwitchLight(bool on)
+        {
+            if (this.isLight)
+            {
+                lightOn = on;
+            }
         }
 
         public bool Drop(int x, int y, Map map)
@@ -71,7 +84,7 @@ namespace Lights_Out
                 this.map = map;
                 this.State = ItemState.Dropped;
                 map.AddItem(this);
-                if (isLight)
+                if (isLight && lightOn)
                     light.PlaceAt(x, y, map);
                 return true;
             }

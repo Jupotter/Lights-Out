@@ -31,9 +31,17 @@ namespace Lights_Out
                 }
                 else
                 {
-                    Monster mons = source.ContainMonster(next.X, next.Y);
-                    if (mons == null)
-                        client.PlaceAt(next.X, next.Y);
+                    Light light = source.ContainLight(next.X, next.Y);
+                    if (light != null)
+                    {
+                        light.Use(10);
+                    }
+                    else
+                    {
+                        Monster mons = source.ContainMonster(next.X, next.Y);
+                        if (mons == null)
+                            client.PlaceAt(next.X, next.Y);
+                    }
                 }
             }
         }

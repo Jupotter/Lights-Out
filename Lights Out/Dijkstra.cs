@@ -29,7 +29,9 @@ namespace Lights_Out
 
         public void AddStartPos(int X, int Y, int val)
         {
-            startPos.Add(new dijkstraStart { X = X, Y = Y , val = val});
+            if (X >= 0 && X < Map.MAP_WIDTH && Y >= 0 && Y < Map.MAP_HEIGHT
+                && source.TCODMap.isWalkable(X, Y))
+                startPos.Add(new dijkstraStart { X = X, Y = Y, val = val });
         }
 
         public void Clear()
