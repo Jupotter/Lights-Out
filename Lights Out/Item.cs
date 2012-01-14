@@ -59,6 +59,11 @@ namespace Lights_Out
             this.map = map;
         }
 
+        public void SetMap(Map map)
+        {
+            this.map = map;
+        }
+
         public void SetLight(Light light)
         {
             this.light = light;

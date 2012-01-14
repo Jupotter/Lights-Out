@@ -15,5 +15,4 @@ Debug commands:
 Stop monster AI: a
 Stop monster injury: z
 Reveal map: w
-
 !!Require Microsoft .Net 4.0!!

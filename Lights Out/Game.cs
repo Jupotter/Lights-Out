@@ -297,6 +297,7 @@ namespace Lights_Out
                         player.Inventory.Add(item);
                         endTurn = true;
                     }
+                    endTurn = true;
                     break;
                 case 'i':
                     player.Inventory.Draw(root);
@@ -313,6 +314,7 @@ namespace Lights_Out
                         player.Equip(i);
                         endTurn = true;
                     }
+                    endTurn = true;
                     break;
                 case 'r':
                     player.Inventory.Draw(root);
