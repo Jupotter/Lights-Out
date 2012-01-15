@@ -13,6 +13,8 @@ namespace Lights_Out
         Player player;
         TCODConsole root = TCODConsole.root;
         MapGen gen { get { return dungeon.Gen; } }
+        Messages messages;
+        TCODConsole mapConsole;
 
         int turnInDark = 0;
 
@@ -20,6 +22,11 @@ namespace Lights_Out
 
         public Game()
         {
+            TCODConsole msgCons = new TCODConsole(80, 10);
+            messages = new Messages(msgCons);
+
+            mapConsole = new TCODConsole(80, 50);
+
             dungeon = new Dungeon(this);
 
             dungeon.GenNewLevel();
@@ -48,7 +55,18 @@ namespace Lights_Out
 
         public void Draw()
         {
-            map.Draw(root);
+            int lightLenght = (int)((1-player.Light.Used) * 80);
+
+            root.setBackgroundColor(TCODColor.black);
+            root.setForegroundColor(TCODColor.white);
+            map.Draw(mapConsole);
+            messages.Draw();
+            TCODConsole.blit(mapConsole, 0, 0, 80, 50, root, 0, 1);
+            TCODConsole.blit(messages.Console, 0, 0, 80, 10, root, 0, 51);
+            root.hline(0, 0, 80, TCODBackgroundFlag.Set);
+            root.setBackgroundColor(TCODColor.amber);
+            root.setForegroundColor(TCODColor.amber);
+            root.hline(0, 0, lightLenght, TCODBackgroundFlag.Set);
             TCODConsole.flush();
         }
 

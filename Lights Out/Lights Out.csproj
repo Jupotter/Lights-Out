@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{43171687-CDF8-40E0-ABDF-E305A9896F27}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lights_Out</RootNamespace>
     <AssemblyName>Lights Out</AssemblyName>
@@ -50,6 +50,9 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="libtcod-net">
       <HintPath>..\..\libtcod 1.5.1 c#\libtcod-net.dll</HintPath>
@@ -74,6 +77,7 @@
     <Compile Include="Map.cs" />
     <Compile Include="MapGen.cs" />
     <Compile Include="Math.cs" />
+    <Compile Include="Messages.cs" />
     <Compile Include="Monster.cs" />
     <Compile Include="MonsterAI.cs" />
     <Compile Include="Player.cs" />
@@ -129,7 +133,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files\7-Zip\7z.exe" a -t7z "$(ProjectName).7z" "$(TargetDir)*</PostBuildEvent>
+    <PostBuildEvent>if "$(ConfiguratioName)" == "Release"  "C:\Program Files\7-Zip\7z.exe" a -t7z "$(ProjectName).7z" "$(TargetDir)*</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

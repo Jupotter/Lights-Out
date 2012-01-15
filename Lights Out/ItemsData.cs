@@ -27,7 +27,7 @@ namespace Lights_Out
             public WeakTorch()
                 : base("Weak Torch", 'i', false)
             {
-                SetLight(new Light(10, 5, 500));
+                SetLight(new Light(10, 5, 1000));
             }
 
             static public Item Create() { return new WeakTorch(); }

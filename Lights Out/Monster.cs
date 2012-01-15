@@ -25,7 +25,7 @@ namespace Lights_Out
             if (Game.MonsterDamage)
             {
                 health -= dmg;
-                Console.WriteLine(String.Format("Monster lose {0} HP: {1} remain", dmg, health));
+                Messages.AddMessage(String.Format("Monster lose {0} HP: {1} remain", dmg, health));
                 if (health <= 0)
                     currentMap.RemoveCreature(this);
             }

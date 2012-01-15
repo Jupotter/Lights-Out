@@ -10,6 +10,8 @@ namespace Lights_Out
 
         Game game;
         Stairs stair;
+        public int maxMonster;
+        int currentMonster = 0;
 
         public Stairs Stair
         {
@@ -39,6 +41,7 @@ namespace Lights_Out
         {
             this.game = game;
 
+            maxMonster = 10;
             tcodmap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
             lights = new List<Light>();
             monsters = new List<Monster>();
@@ -197,12 +200,17 @@ namespace Lights_Out
 
         public void AddCreature(Monster monster)
         {
-            monsters.Add(monster);
+            if (currentMonster <= maxMonster)
+            {
+                currentMonster += 1;
+                monsters.Add(monster);
+            }
         }
 
         public void RemoveCreature(Monster monster)
         {
             dead.Add(monster);
+            currentMonster -= 1;
         }
 
         public bool this[int x, int y]

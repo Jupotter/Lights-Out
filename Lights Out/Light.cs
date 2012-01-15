@@ -28,6 +28,10 @@ namespace Lights_Out
         public int PosY
         { get { return posY; } }
 
+
+        public float Used
+        { get { return (float)elapsed / capacity; } }
+
         public Light(int intensity, int radius, int capacity, TCODColor color)
         {
             this.color = color;
@@ -50,7 +54,7 @@ namespace Lights_Out
             if (tcodmap.isInFov(x, y))
             {
                 int dist = distanceFunc(x, y, posX, posY);
-                float mult = 1f - (float)elapsed / capacity;
+                float mult = 1f - (float)System.Math.Pow((float)elapsed / capacity, 2);
                 int ret = (int)((intensity + (int)(dist * coef))*mult);
                 return (ret >= 0 ? ret : 0);
             }
@@ -91,6 +95,7 @@ namespace Lights_Out
             }
             
         }
+
 
         public void Use(int num)
         {

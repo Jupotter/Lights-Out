@@ -4,7 +4,7 @@ namespace Lights_Out
 {
     class Dungeon
     {
-        const int MAX_DEPTH = 5;
+        const int MAX_DEPTH = 10;
 
         Game game;
 
@@ -50,6 +50,7 @@ namespace Lights_Out
             {
                 Map map;
                 gen.Generate(5, out map, game);
+                map.maxMonster = 3 * depth + 5;
                 mapList.Add(map);
                 depth++;
                 return true;
