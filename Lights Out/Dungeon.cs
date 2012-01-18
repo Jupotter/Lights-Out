@@ -39,8 +39,16 @@ namespace Lights_Out
         {
             if (lvl > depth + 1 || (lvl == depth + 1 && !GenNewLevel()))
                 return false;
-            currentDepth = lvl;
-            pl.PlaceAt(CurrentLevel.StartPosX, CurrentLevel.StartPosY, CurrentLevel);
+            if (lvl > currentDepth)
+            {
+                currentDepth = lvl;
+                pl.PlaceAt(CurrentLevel.StartPosX, CurrentLevel.StartPosY, CurrentLevel);
+            }
+            else
+            {
+                currentDepth = lvl;
+                pl.PlaceAt(CurrentLevel.Stair.PosX, CurrentLevel.Stair.PosY, CurrentLevel);
+            }
             return true;
         }
 

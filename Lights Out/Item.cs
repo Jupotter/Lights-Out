@@ -9,7 +9,7 @@ namespace Lights_Out
     public class Item
     {
         public ItemState State;
-        bool isLight;
+        protected bool isLight;
         public bool IsLight
         { get { return isLight; } }
         bool lightOn;
@@ -66,7 +66,7 @@ namespace Lights_Out
             lightOn = true;
         }
 
-        public void SwitchLight(bool on)
+        public virtual void SwitchLight(bool on)
         {
             if (this.isLight)
             {
@@ -74,7 +74,7 @@ namespace Lights_Out
             }
         }
 
-        public bool Drop(int x, int y, Map map)
+        public virtual bool Drop(int x, int y, Map map)
         {
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
@@ -91,7 +91,7 @@ namespace Lights_Out
             return false;
         }
 
-        public void Get()
+        public virtual void Get()
         {
             this.State = ItemState.Held;
             map.RemoveItem(this);

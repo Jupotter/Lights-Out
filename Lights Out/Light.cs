@@ -54,8 +54,10 @@ namespace Lights_Out
             if (tcodmap.isInFov(x, y))
             {
                 int dist = distanceFunc(x, y, posX, posY);
-                float mult = 1f - (float)System.Math.Pow((float)elapsed / capacity, 2);
-                int ret = (int)((intensity + (int)(dist * coef))*mult);
+                float mult = 1f;
+                if (capacity > 0)
+                    mult = 1f - (float)System.Math.Pow((float)elapsed / capacity, 2);
+                int ret = (int)((intensity + (int)(dist * coef)) * mult);
                 return (ret >= 0 ? ret : 0);
             }
             return 0;
@@ -93,7 +95,6 @@ namespace Lights_Out
                 if (elapsed >= capacity)
                     currentMap.RemoveLight(this);
             }
-            
         }
 
 

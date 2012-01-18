@@ -79,12 +79,15 @@ namespace Lights_Out
                 endturn = HandleKeyPress(key);
                 Draw();
             } while (!endturn && ! Exit);
-            map.Update();
-            Draw();
-            if (map.IntensityAt(player.posX, player.posY) == 0)
-                if (turnInDark == 3)
-                    Exit = true;
-                else turnInDark++;
+            if (!Exit)
+            {
+                map.Update();
+                Draw();
+                if (map.IntensityAt(player.posX, player.posY) == 0)
+                    if (turnInDark == 3)
+                        Exit = true;
+                    else turnInDark++;
+            }
         }
 
         public bool HandleKeyPress(TCODKey key)
@@ -350,12 +353,29 @@ namespace Lights_Out
                     if (player.posX == map.Stair.PosX && player.posY == map.Stair.PosY)
                     {
                         dungeon.GoToMap(dungeon.CurrentDepth + 1, player);
-                        for (int n = 0; n < 10; n++)
+                        for (int n = map.CurrentMonsterNum; n < map.maxMonster; n++)
                         {
                             AddMonster(map);
                         }
                     }
                     break;
+                case '<':
+                    if (player.posX == map.StartPosX && player.posY == map.StartPosY)
+                    {
+                        if (!(dungeon.CurrentDepth == 1))
+                            dungeon.GoToMap(dungeon.CurrentDepth - 1, player);
+                        else
+                        {
+                            Messages.AddMessage("If you go up, you'll exit the Dungeon. Are you sure?");
+                            key = TCODConsole.waitForKeypress(true);
+                            if (key.Character == 'Y')
+                                Exit = true;
+                            else if (key.Character != 'N')
+                                Messages.AddMessage("Y or N only");
+                        }
+                    }
+                    break;
+                #region Debug
                 case 'w':
                     ShowWall = !ShowWall;
                     break;
@@ -367,6 +387,7 @@ namespace Lights_Out
                     break;
                 default:
                     break;
+                #endregion
             }
             #endregion
             return endTurn;

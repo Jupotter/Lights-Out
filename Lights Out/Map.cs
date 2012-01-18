@@ -12,6 +12,8 @@ namespace Lights_Out
         Stairs stair;
         public int maxMonster;
         int currentMonster = 0;
+        public int CurrentMonsterNum
+        { get { return currentMonster; } }
 
         public Stairs Stair
         {
@@ -20,6 +22,7 @@ namespace Lights_Out
         }
 
         TCODMap tcodmap;
+        bool[,] known;
         Dijkstra dijkstra;
         public int StartPosX;
         public int StartPosY;
@@ -43,6 +46,7 @@ namespace Lights_Out
 
             maxMonster = 10;
             tcodmap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
+            known = new bool[MAP_WIDTH, MAP_HEIGHT];
             lights = new List<Light>();
             monsters = new List<Monster>();
             items = new List<Item>();
@@ -59,37 +63,100 @@ namespace Lights_Out
 
         public void Draw(TCODConsole cons)
         {
-            cons.setForegroundColor(TCODColor.sepia);
+            cons.setForegroundColor(TCODColor.white);
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
                 {
                     cons.putChar(i, j, this[i, j] ? '#' : '.');
-
-                    foreach (Item item in items.FindAll(item => item.PosX == i && item.PosY == j))
-                    {
-                        item.Draw(cons);
-                    }
-
-                    foreach (Monster mons in monsters.FindAll(item => item.posX == i && item.posY == j))
-                    {
-                        mons.Draw(cons);
-                    }
-
                 }
 
             stair.Draw(cons);
+            cons.putChar(StartPosX, StartPosY, (int)'<');
+
+            foreach (Item item in items)
+            {
+                item.Draw(cons);
+            }
+
+            foreach (Monster mons in monsters)
+            {
+                mons.Draw(cons);
+            }
+
             Player.Draw(cons);
 
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
                 {
-                    int intens = IntensityAt(i, j);
+                    /*int intens;
+                    Light light = LightAt(i, j);
+                    
+                    if (light == null)
+                        intens = 0;
+                    else
+                    {
+                        intens = light.IntensityAt(i, j);
+                        color = color.Multiply(light.Color);
+                    }
+                    float value = (float)intens / 20 + (Game.ShowWall ? 0.05f : 0f);
+                    color.setValue(System.Math.Min(value, 1f));//*/
 
                     TCODColor color = cons.getCharForeground(i, j);
-                    float value = (float)intens / 20 + (Game.ShowWall ? 0.05f : 0f);
-                    color.setValue(System.Math.Min(value, 1f));
+                    TCODColor newCol = ColorAt(i, j);
+
+                    if (newCol.NotEqual(TCODColor.black))
+                        known[i, j] = true;
+                    color = color.Multiply(newCol);
+
                     cons.setCharForeground(i, j, color);
                 }
+        }
+
+        public Light LightAt(int X, int Y)
+        {
+            Light max = null;
+            int intens = 0;
+            int t;
+            foreach (Light light in lights)
+            {
+                t = light.IntensityAt(X, Y);
+                if (t > intens)
+                {
+                    intens = t;
+                    max = light;
+                }
+            }
+            t = Player.Light.IntensityAt(X, Y);
+            if (t > intens)
+            {
+                intens = t;
+                max = Player.Light;
+            }
+            return max;
+        }
+
+        public TCODColor ColorAt(int X, int Y)
+        {
+            TCODColor col = TCODColor.black;
+            int intens = 0;
+            int t;
+            foreach (Light light in lights)
+            {
+                t = light.IntensityAt(X, Y);
+                if (t > intens)
+                {
+                    intens = t;
+                }
+                col = col.Plus(light.Color.Multiply((float)t/20));
+            }
+            t = Player.Light.IntensityAt(X, Y);
+            if (t > intens)
+            {
+                intens = t;
+                col = col.Plus(Player.Light.Color);
+            }
+            col.setValue((float)intens / 20 + (Game.ShowWall||known[X,Y] ? 0.05f : 0f));
+            return col;
         }
 
         public int IntensityAt(int X, int Y)
@@ -111,7 +178,7 @@ namespace Lights_Out
             dijkstra.Clear();
             foreach (Light light in lights)
             {
-                dijkstra.AddStartPos(light.PosX, light.PosY, 20 - light.IntensityAt(light.PosX, light.PosY));
+                dijkstra.AddStartPos(light.PosX, light.PosY, 40 - light.IntensityAt(light.PosX, light.PosY)*2);
             }
             dijkstra.AddStartPos(Player.Light.PosX, Player.Light.PosY, 20 - Player.Light.IntensityAt(Player.Light.PosX, Player.Light.PosY));
 
