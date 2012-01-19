@@ -1,3 +1,5 @@
+Light Out is a roguelike game where the gameplay is heavily based on lightings.
+
 Explore the dungeon, armed only with your torches and your courage.
 
 Ennemies are attracted by light, but also injured by it. The stronger it is, the more live they lose.
@@ -15,4 +17,6 @@ Debug commands:
 Stop monster AI: a
 Stop monster injury: z
 Reveal map: w
-!!Require Microsoft .Net 4.0!!
+
+
+!!Require Microsoft .Net 3.5!!

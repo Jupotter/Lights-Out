@@ -1,3 +1,5 @@
+Light Out est un roguelike où le gameplay est centré sur l'utilisation de la lumière.
+
 Explorez le Donjon, armé seulement de vos torches et de votre courage.
 
 Les ennemis sont attirés par la lumière, mais aussi blessés par elle. Plus ils sont éclairés, plus ils sont blessés.
@@ -17,4 +19,4 @@ Arreter les blessures de monstres: z
 Afficher toute la carte: w
 
 
-!!Require Microsoft .Net 4.0!!
+!!Require Microsoft .Net 3.5!!
