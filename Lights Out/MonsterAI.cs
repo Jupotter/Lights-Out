@@ -22,7 +22,7 @@ namespace Lights_Out
         {
             if (Game.MonsterAI)
             {
-                IntCouple next = _map.GetNext(_client.PosX, _client.PosY);
+                var next = _map.GetNext(_client.PosX, _client.PosY);
 
                 if (_source.Player.PosX == next.X && _source.Player.PosY == next.Y)
                 {

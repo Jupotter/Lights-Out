@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Lights_Out
 {
-    public struct IntCouple { public int X; public int Y;}
-
     public class Dijkstra
     {
+        public struct IntCouple { public int X; public int Y;}
+
         struct DijkstraStart { public int X; public int Y; public float Val;}
         
         const float Diag = 1.41421356f;
