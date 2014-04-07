@@ -4,16 +4,16 @@ namespace Lights_Out
 {
     public class Creature
     {
-        public int posX;
-        public int posY;
-        char tile;
-        TCODColor color;
-        public Map currentMap;
+        public int PosX;
+        public int PosY;
+        readonly char _tile;
+        readonly TCODColor _color;
+        public Map CurrentMap;
 
         public Creature(char tile, TCODColor color)
         {
-            this.tile = tile;
-            this.color = color;
+            _tile = tile;
+            _color = color;
             //PlaceAt(map.StartPosX, map.StartPosY);
         }
 
@@ -22,12 +22,12 @@ namespace Lights_Out
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
             {
-                if (map != currentMap)
+                if (CurrentMap == null || map != CurrentMap)
                 {
-                    currentMap = map;
+                    CurrentMap = map;
                 }
-                posX = x;
-                posY = y;
+                PosX = x;
+                PosY = y;
                 return true;
             }
             return false;
@@ -35,12 +35,12 @@ namespace Lights_Out
 
         public virtual bool Move(int dX, int dY)
         {
-            int newX = posX + dX;
-            int newY = posY + dY;
-            if (!currentMap[newX, newY])
+            int newX = PosX + dX;
+            int newY = PosY + dY;
+            if (!CurrentMap[newX, newY])
             {
-                posX = newX;
-                posY = newY;
+                PosX = newX;
+                PosY = newY;
                 return true;
             }
             return false;
@@ -48,8 +48,8 @@ namespace Lights_Out
 
         public void Draw(TCODConsole cons)
         {
-            cons.putChar(posX, posY, (int)tile);
-            cons.setCharForeground(posX, posY, color);
+            cons.putChar(PosX, PosY, _tile);
+            cons.setCharForeground(PosX, PosY, _color);
         }
     }
 }

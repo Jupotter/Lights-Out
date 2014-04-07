@@ -4,60 +4,54 @@ namespace Lights_Out
 {
     public class Player : Creature
     {
-        Inventory inventory;
+        readonly Inventory _inventory;
         public Inventory Inventory
-        { get { return inventory;} }
+        { get { return _inventory; } }
 
-        Light light;
-        public Light Light
-        { get { return light; } }
+        public Light Light { get; private set; }
 
-
-        Item equiped;
 
         public Player(Map map)
             : base('@', TCODColor.green)
         {
-            currentMap = map;
-            equiped = null;
-            light = new Light(0,0,0);
-            inventory = new Inventory(this);
-            inventory.Add(new ItemsData.TorchLight());
+            CurrentMap = map;
+            Light = new Light(0, 0, 0);
+            _inventory = new Inventory(this);
+            _inventory.Add(new ItemsData.TorchLight());
             Equip(Inventory.GetAtLetter('a'));
             for (int i = 0; i < 5; i++)
             {
-                inventory.Add(new ItemsData.WeakTorch());
+                _inventory.Add(new ItemsData.WeakTorch());
             }
-            inventory.Add(new ItemsData.FlashScroll());
-            inventory.Add(new ItemsData.FlashScroll());
-            inventory.Add(new ItemsData.FlashScroll());
+            _inventory.Add(new ItemsData.FlashScroll());
+            _inventory.Add(new ItemsData.FlashScroll());
+            _inventory.Add(new ItemsData.FlashScroll());
         }
 
         public void Equip(Item i)
         {
-            if (currentMap != null)
-            currentMap.RemoveLight(light);
-            equiped = i;
+            if (CurrentMap != null)
+                CurrentMap.RemoveLight(Light);
             if (i.IsLight)
-                setLight(i.Light);
+                SetLight(i.Light);
         }
 
-        void setLight(Light light)
+        void SetLight(Light light)
         {
-            this.light = light;
-            light.PlaceAt(posX, posY, currentMap);
+            Light = light;
+            light.PlaceAt(PosX, PosY, CurrentMap);
         }
 
         public override bool PlaceAt(int x, int y, Map map)
         {
-            if (map != currentMap)
+            if (map != CurrentMap)
             {
-                currentMap.Player = null;
+                CurrentMap.Player = null;
                 map.Player = this;
             }
             bool ret = base.PlaceAt(x, y, map);
             if (ret)
-                light.PlaceAt(posX, posY, currentMap);
+                Light.PlaceAt(PosX, PosY, CurrentMap);
             return ret;
         }
 
@@ -65,7 +59,7 @@ namespace Lights_Out
         {
             bool ret = base.Move(dX, dY);
             if (ret)
-                light.PlaceAt(posX, posY, currentMap);
+                Light.PlaceAt(PosX, PosY, CurrentMap);
             return ret;
         }
     }

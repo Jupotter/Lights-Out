@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using libtcod;
 
 namespace Lights_Out
@@ -8,51 +9,47 @@ namespace Lights_Out
         public const int MAP_WIDTH  = 80;
         public const int MAP_HEIGHT = 50;
 
-        Game game;
-        Stairs stair;
-        public int maxMonster;
-        int currentMonster = 0;
-        public int CurrentMonsterNum
-        { get { return currentMonster; } }
+        readonly Game _game;
+        Stairs _stair;
+        public int MaxMonster;
+        public int CurrentMonsterNum { get; private set; }
 
         public Stairs Stair
         {
-            get { return stair; }
-            set { stair = value; }
+            get { return _stair; }
+            set { _stair = value; }
         }
 
-        TCODMap tcodmap;
-        bool[,] known;
-        Dijkstra dijkstra;
+        readonly bool[,] _known;
         public int StartPosX;
         public int StartPosY;
 
-        List<Monster> dead;
-        List<Monster> monsters;
-        List<Light> lights;
-        List<Light> deadLights;
-        List<Item> items;
+        readonly List<Monster> _dead;
+        readonly List<Monster> _monsters;
+        readonly List<Light> _lights;
+        readonly List<Light> _deadLights;
+        readonly List<Item> _items;
         public Player Player;
 
-        public TCODMap TCODMap
-        { get { return tcodmap; } }
-        public Dijkstra Dijkstra
-        { get { return dijkstra; } }
+        public TCODMap TCODMap { get; private set; }
+
+        public Dijkstra Dijkstra { get; private set; }
 
 
         public Map(Game game)
         {
-            this.game = game;
+            CurrentMonsterNum = 0;
+            _game = game;
 
-            maxMonster = 10;
-            tcodmap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
-            known = new bool[MAP_WIDTH, MAP_HEIGHT];
-            lights = new List<Light>();
-            monsters = new List<Monster>();
-            items = new List<Item>();
-            dead = new List<Monster>();
-            deadLights = new List<Light>();
-            dijkstra = new Dijkstra(this);
+            MaxMonster = 10;
+            TCODMap = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
+            _known = new bool[MAP_WIDTH, MAP_HEIGHT];
+            _lights = new List<Light>();
+            _monsters = new List<Monster>();
+            _items = new List<Item>();
+            _dead = new List<Monster>();
+            _deadLights = new List<Light>();
+            Dijkstra = new Dijkstra(this);
 
             for (int i = 0; i < MAP_WIDTH; i++)
                 for (int j = 0; j < MAP_HEIGHT; j++)
@@ -70,15 +67,15 @@ namespace Lights_Out
                     cons.putChar(i, j, this[i, j] ? '#' : '.');
                 }
 
-            stair.Draw(cons);
-            cons.putChar(StartPosX, StartPosY, (int)'<');
+            _stair.Draw(cons);
+            cons.putChar(StartPosX, StartPosY, '<');
 
-            foreach (Item item in items)
+            foreach (Item item in _items)
             {
                 item.Draw(cons);
             }
 
-            foreach (Monster mons in monsters)
+            foreach (Monster mons in _monsters)
             {
                 mons.Draw(cons);
             }
@@ -105,185 +102,179 @@ namespace Lights_Out
                     TCODColor newCol = ColorAt(i, j);
 
                     if (newCol.NotEqual(TCODColor.black))
-                        known[i, j] = true;
+                        _known[i, j] = true;
                     color = color.Multiply(newCol);
 
                     cons.setCharForeground(i, j, color);
                 }
         }
 
-        public Light LightAt(int X, int Y)
+        public Light LightAt(int x, int y)
         {
             Light max = null;
             int intens = 0;
             int t;
-            foreach (Light light in lights)
+            foreach (Light light in _lights)
             {
-                t = light.IntensityAt(X, Y);
+                t = light.IntensityAt(x, y);
                 if (t > intens)
                 {
                     intens = t;
                     max = light;
                 }
             }
-            t = Player.Light.IntensityAt(X, Y);
+            t = Player.Light.IntensityAt(x, y);
             if (t > intens)
             {
-                intens = t;
                 max = Player.Light;
             }
             return max;
         }
 
-        public TCODColor ColorAt(int X, int Y)
+        public TCODColor ColorAt(int x, int y)
         {
             TCODColor col = TCODColor.black;
             int intens = 0;
             int t;
-            foreach (Light light in lights)
+            foreach (Light light in _lights)
             {
-                t = light.IntensityAt(X, Y);
+                t = light.IntensityAt(x, y);
                 if (t > intens)
                 {
                     intens = t;
                 }
                 col = col.Plus(light.Color.Multiply((float)t/20));
             }
-            t = Player.Light.IntensityAt(X, Y);
+            t = Player.Light.IntensityAt(x, y);
             if (t > intens)
             {
                 intens = t;
                 col = col.Plus(Player.Light.Color);
             }
-            col.setValue((float)intens / 20 + (Game.ShowWall||known[X,Y] ? 0.05f : 0f));
+            col.setValue((float)intens / 20 + (Game.ShowWall||_known[x,y] ? 0.05f : 0f));
             return col;
         }
 
-        public int IntensityAt(int X, int Y)
+        public int IntensityAt(int x, int y)
         {
-            int intens = 0;
-            foreach (Light light in lights)
-            {
-                int t = light.IntensityAt(X, Y);
-                intens = System.Math.Max(intens, t);
-            }
-            int pl = Player.Light.IntensityAt(X, Y);
+            int intens = _lights.Select(light => light.IntensityAt(x, y)).Aggregate(0, System.Math.Max);
+            int pl = Player.Light.IntensityAt(x, y);
             intens = System.Math.Max(intens, pl);
             return intens;
         }
 
         public void Update()
         {
-            dead.Clear();
-            dijkstra.Clear();
-            foreach (Light light in lights)
+            _dead.Clear();
+            Dijkstra.Clear();
+            foreach (Light light in _lights)
             {
-                dijkstra.AddStartPos(light.PosX, light.PosY, 40 - light.IntensityAt(light.PosX, light.PosY)*2);
+                Dijkstra.AddStartPos(light.PosX, light.PosY, 40 - light.IntensityAt(light.PosX, light.PosY)*2);
             }
-            dijkstra.AddStartPos(Player.Light.PosX, Player.Light.PosY, 20 - Player.Light.IntensityAt(Player.Light.PosX, Player.Light.PosY));
+            Dijkstra.AddStartPos(Player.Light.PosX, Player.Light.PosY, 20 - Player.Light.IntensityAt(Player.Light.PosX, Player.Light.PosY));
 
-            dijkstra.ComputeDijkstra();
+            Dijkstra.ComputeDijkstra();
 
-            foreach (Monster mons in monsters)
+            foreach (Monster mons in _monsters)
             {
                 mons.Act();
-                int intens = IntensityAt(mons.posX, mons.posY);
+                int intens = IntensityAt(mons.PosX, mons.PosY);
                 if (intens > 0)
                     mons.TakeDamage(intens);
             }
-            foreach (Light light in lights)
+            foreach (Light light in _lights)
             {
                 light.Update();
             }
             Player.Light.Update();
-            foreach (Monster mons in dead)
+            foreach (Monster mons in _dead)
             {
-                monsters.Remove(mons);
-                game.AddMonster(this);
+                _monsters.Remove(mons);
+                _game.AddMonster(this);
             }
-            foreach (Light light in deadLights)
+            foreach (Light light in _deadLights)
             {
-                lights.Remove(light);
+                _lights.Remove(light);
             }
         }
 
-        public bool SetStartPos(int X, int Y)
+        public bool SetStartPos(int x, int y)
         {
-            if (X >= 0 && X < Map.MAP_WIDTH
-                && Y >= 0 && Y < Map.MAP_HEIGHT)
+            if (x >= 0 && x < MAP_WIDTH
+                && y >= 0 && y < MAP_HEIGHT)
             {
-                StartPosX = X;
-                StartPosY = Y;
+                StartPosX = x;
+                StartPosY = y;
                 return true;
             }
             return false;
         }
 
-        public Monster ContainMonster(int X, int Y)
+        public Monster ContainMonster(int x, int y)
         {
-            return monsters.Find(m => m.posX == X && m.posY == Y);
+            return _monsters.Find(m => m.PosX == x && m.PosY == y);
         }
 
-        public Light ContainLight(int X, int Y)
+        public Light ContainLight(int x, int y)
         {
-            return lights.Find(m => m.PosX == X && m.PosY == Y);
+            return _lights.Find(m => m.PosX == x && m.PosY == y);
         }
 
         public void AddLight(Light light)
         {
-            lights.Add(light);
+            _lights.Add(light);
         }
 
         public void RemoveLight(Light light)
         {
             light.RemoveFromMap();
-            deadLights.Add(light);
+            _deadLights.Add(light);
         }
 
-        public void RemoveLighstAt(int X, int Y)
+        public void RemoveLighstAt(int x, int y)
         {
-            deadLights.AddRange(lights.FindAll(l => l.PosX == X && l.PosY == Y));
+            _deadLights.AddRange(_lights.FindAll(l => l.PosX == x && l.PosY == y));
         }
 
         public void AddItem(Item item)
         {
-            items.Add(item);
+            _items.Add(item);
         }
 
         public void RemoveItem(Item item)
         {
-            items.Remove(item);
+            _items.Remove(item);
         }
 
-        public void RemoveItemsAt(int X, int Y)
+        public void RemoveItemsAt(int x, int y)
         {
-            items.RemoveAll(i => i.PosX == X && i.PosY == Y);
+            _items.RemoveAll(i => i.PosX == x && i.PosY == y);
         }
 
-        public List<Item> GetItemsAt(int X, int Y)
+        public List<Item> GetItemsAt(int x, int y)
         {
-            return items.FindAll(i => i.PosX == X && i.PosY == Y);
+            return _items.FindAll(i => i.PosX == x && i.PosY == y);
         }
 
         public void AddCreature(Monster monster)
         {
-            if (currentMonster <= maxMonster)
+            if (CurrentMonsterNum <= MaxMonster)
             {
-                currentMonster += 1;
-                monsters.Add(monster);
+                CurrentMonsterNum += 1;
+                _monsters.Add(monster);
             }
         }
 
         public void RemoveCreature(Monster monster)
         {
-            dead.Add(monster);
-            currentMonster -= 1;
+            _dead.Add(monster);
+            CurrentMonsterNum -= 1;
         }
 
         public bool this[int x, int y]
         {
-            get { return !tcodmap.isWalkable(x, y); ; }
-            set { tcodmap.setProperties(x, y, !value, !value); }
+            get { return !TCODMap.isWalkable(x, y); }
+            set { TCODMap.setProperties(x, y, !value, !value); }
         }
     }
 }

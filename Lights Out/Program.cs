@@ -14,9 +14,8 @@ namespace Lights_Out
             Game game = new Game();
 
             game.Draw();
-            while (!TCODConsole.isWindowClosed()&&!game.Exit)
+            while (!TCODConsole.isWindowClosed() && !game.Exit)
             {
-                //game.Draw();
                 game.Update();
             }
         }

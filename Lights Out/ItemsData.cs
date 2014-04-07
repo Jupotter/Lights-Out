@@ -5,12 +5,13 @@ namespace Lights_Out
 {
     static class ItemsData
     {
-        delegate Item itemCreate();
-        struct weightedCreator { public itemCreate create; public int weight; };
+        private delegate Item ItemCreate();
+
+        private struct WeightedCreator { public ItemCreate Create; public int Weight; };
 
         public class TorchLight : Item
         {
-            static public int weight = 10;
+            static public int Weight = 10;
 
             public TorchLight()
                 : base("Torch", '|', false)
@@ -23,7 +24,7 @@ namespace Lights_Out
 
         public class WeakTorch : Item
         {
-            static public int weight = 30;
+            static public int Weight = 30;
 
             public WeakTorch()
                 : base("Weak Torch", 'i', false)
@@ -36,7 +37,7 @@ namespace Lights_Out
 
         public class GlowingPebble : Item
         {
-            static public int weight = 10;
+            static public int Weight = 10;
 
             public GlowingPebble()
                 : base("Glowing Pebble", 'o', false)
@@ -51,14 +52,14 @@ namespace Lights_Out
 
             public override bool Drop(int x, int y, Map map)
             {
-                isLight = true;
+                IsLight = true;
                 SwitchLight(true);
                 return base.Drop(x, y, map);
             }
 
             public override void Get()
             {
-                isLight = false;
+                IsLight = false;
                 base.Get();
             }
 
@@ -67,7 +68,7 @@ namespace Lights_Out
 
         public class FlashScroll : Item
         {
-            static public int weight = 2;
+            static public int Weight = 2;
 
             public FlashScroll()
                 : base("Flash Scroll", '%', false)
@@ -76,34 +77,34 @@ namespace Lights_Out
             public override void Use()
             {
                 Light l = new Light(200, 200, 2);
-                l.PlaceAt(map.Player.posX, map.Player.posY, map);
+                l.PlaceAt(Map.Player.PosX, Map.Player.PosY, Map);
             }
 
             static public Item Create() { return new FlashScroll(); }
         }
 
-        static List<weightedCreator> ItemList;
+        static readonly List<WeightedCreator> ItemList;
         static public int TotalWeight;
 
         static ItemsData()
         {
-            ItemList = new List<weightedCreator>();
-            ItemList.Add(new weightedCreator { create = TorchLight.Create, weight = TorchLight.weight }); TotalWeight += TorchLight.weight;
-            ItemList.Add(new weightedCreator { create = WeakTorch.Create, weight = WeakTorch.weight }); TotalWeight += WeakTorch.weight;
-            ItemList.Add(new weightedCreator { create = FlashScroll.Create, weight = FlashScroll.weight }); TotalWeight += FlashScroll.weight;
-            ItemList.Add(new weightedCreator { create = GlowingPebble.Create, weight = GlowingPebble.weight }); TotalWeight += GlowingPebble.weight;
+            ItemList = new List<WeightedCreator>();
+            ItemList.Add(new WeightedCreator { Create = TorchLight.Create, Weight = TorchLight.Weight }); TotalWeight += TorchLight.Weight;
+            ItemList.Add(new WeightedCreator { Create = WeakTorch.Create, Weight = WeakTorch.Weight }); TotalWeight += WeakTorch.Weight;
+            ItemList.Add(new WeightedCreator { Create = FlashScroll.Create, Weight = FlashScroll.Weight }); TotalWeight += FlashScroll.Weight;
+            ItemList.Add(new WeightedCreator { Create = GlowingPebble.Create, Weight = GlowingPebble.Weight }); TotalWeight += GlowingPebble.Weight;
         }
 
         public static Item PickWeightedItem(int num)
         {
             int sum = 0;
-            List<weightedCreator>.Enumerator e = ItemList.GetEnumerator();
+            List<WeightedCreator>.Enumerator e = ItemList.GetEnumerator();
             do
             {
                 e.MoveNext();
-                sum += e.Current.weight;
+                sum += e.Current.Weight;
             } while (sum < num);
-            return e.Current.create();
+            return e.Current.Create();
         }
     }
 }

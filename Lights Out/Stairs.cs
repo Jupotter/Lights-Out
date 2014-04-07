@@ -3,24 +3,25 @@ namespace Lights_Out
 {
     public class Stairs
     {
-        int posX;
+        readonly int _posX;
 
         public int PosX
-        { get { return posX; } }
-        int posY;
+        { get { return _posX; } }
+
+        readonly int _posY;
 
         public int PosY
-        { get { return posY; } }
+        { get { return _posY; } }
 
         public Stairs(int x, int y)
         {
-            posX = x;
-            posY = y;
+            _posX = x;
+            _posY = y;
         }
 
         public void Draw(libtcod.TCODConsole cons)
         {
-            cons.putChar(posX, posY, '>');
+            cons.putChar(_posX, _posY, '>');
         }
     }
 }

@@ -5,40 +5,38 @@ namespace Lights_Out
 {
     public class Monster : Creature
     {
-        int health;
-        public int Health
-        { get { return health; } }
+        public int Health { get; private set; }
 
-        MonsterAI ai;
+        readonly MonsterAI _ai;
 
         public Monster(char c, TCODColor color, Map map, int health)
             : base(c, color)
         {
-            this.health = health;
+            Health = health;
             map.AddCreature(this);
-            ai = new MonsterAI(this);
-            ai.SetMap(map);
+            _ai = new MonsterAI(this);
+            _ai.SetMap(map);
         }
 
         public void TakeDamage(int dmg)
         {
             if (Game.MonsterDamage)
             {
-                health -= dmg;
-                Messages.AddMessage(String.Format("Monster lose {0} HP: {1} remain", dmg, health));
-                if (health <= 0)
-                    currentMap.RemoveCreature(this);
+                Health -= dmg;
+                Messages.AddMessage(String.Format("Monster lose {0} HP: {1} remain", dmg, Health));
+                if (Health <= 0)
+                    CurrentMap.RemoveCreature(this);
             }
         }
 
         public override bool PlaceAt(int x, int y, Map map)
         {
-            if (currentMap != map)
+            if (CurrentMap != map)
             {
-                if (currentMap != null)
-                currentMap.RemoveCreature(this);
+                if (CurrentMap != null)
+                    CurrentMap.RemoveCreature(this);
                 map.AddCreature(this);
-                ai.SetMap(map);
+                _ai.SetMap(map);
             }
             bool ret = base.PlaceAt(x, y, map);
             return ret;
@@ -46,7 +44,7 @@ namespace Lights_Out
 
         public void Act()
         {
-            ai.Act();
+            _ai.Act();
         }
     }
 }

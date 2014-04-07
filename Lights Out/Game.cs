@@ -4,42 +4,46 @@ namespace Lights_Out
 {
     public class Game
     {
-        static public bool ShowWall = false;
+ // ReSharper disable InconsistentNaming
+        static public bool ShowWall = true;
         static public bool MonsterAI = true;
         static public bool MonsterDamage = true;
+        static public bool InfiniteTorch = true;
+// ReSharper restore InconsistentNaming
 
-        Dungeon dungeon;
-        Map map { get { return dungeon.CurrentLevel; } }
-        Player player;
-        TCODConsole root = TCODConsole.root;
-        MapGen gen { get { return dungeon.Gen; } }
-        Messages messages;
-        TCODConsole mapConsole;
+        readonly Dungeon _dungeon;
+        Map Map { get { return _dungeon.CurrentLevel; } }
+        readonly Player _player;
+        readonly TCODConsole _root = TCODConsole.root;
+        MapGen Gen { get { return _dungeon.Gen; } }
+        readonly Messages _messages;
+        readonly TCODConsole _mapConsole;
 
-        int turnInDark = 0;
+        int _turnInDark;
 
         public bool Exit = false;
 
         public Game()
         {
+            _turnInDark = 0;
             TCODConsole msgCons = new TCODConsole(80, 10);
-            messages = new Messages(msgCons);
+            _messages = new Messages(msgCons);
 
-            mapConsole = new TCODConsole(80, 50);
+            _mapConsole = new TCODConsole(80, 50);
 
-            dungeon = new Dungeon(this);
+            _dungeon = new Dungeon(this);
 
-            dungeon.GenNewLevel();
-            dungeon.CurrentDepth = 1;
+            _dungeon.GenNewLevel();
+            _dungeon.CurrentDepth = 1;
             
 
-            player = new Player(dungeon.CurrentLevel);
-            map.Player = player;
-            player.PlaceAt(map.StartPosX, map.StartPosY, map);
+            _player = new Player(_dungeon.CurrentLevel);
+            Map.Player = _player;
+            _player.PlaceAt(Map.StartPosX, Map.StartPosY, Map);
 
             for (int i = 0; i < 10; i++)
             {
-                AddMonster(map);
+                AddMonster(Map);
             }
         }
 
@@ -47,26 +51,26 @@ namespace Lights_Out
         {
             int x, y;
             do
-                gen.FindOpenSpot(out x, out y, map);
-            while (Math.Distance_King(x, y, player.posX, player.posY) < 30);
+                Gen.FindOpenSpot(out x, out y, map);
+            while (Math.Distance_King(x, y, _player.PosX, _player.PosY) < 30);
             Monster m = new Monster('X', TCODColor.red, map, 50);
             m.PlaceAt(x, y, map);
         }
 
         public void Draw()
         {
-            int lightLenght = (int)((1-player.Light.Used) * 80);
+            int lightLenght = (int)((1-_player.Light.Used) * 80);
 
-            root.setBackgroundColor(TCODColor.black);
-            root.setForegroundColor(TCODColor.white);
-            map.Draw(mapConsole);
-            messages.Draw();
-            TCODConsole.blit(mapConsole, 0, 0, 80, 50, root, 0, 1);
-            TCODConsole.blit(messages.Console, 0, 0, 80, 10, root, 0, 51);
-            root.hline(0, 0, 80, TCODBackgroundFlag.Set);
-            root.setBackgroundColor(TCODColor.amber);
-            root.setForegroundColor(TCODColor.amber);
-            root.hline(0, 0, lightLenght, TCODBackgroundFlag.Set);
+            _root.setBackgroundColor(TCODColor.black);
+            _root.setForegroundColor(TCODColor.white);
+            Map.Draw(_mapConsole);
+            _messages.Draw();
+            TCODConsole.blit(_mapConsole, 0, 0, 80, 50, _root, 0, 1);
+            TCODConsole.blit(_messages.Console, 0, 0, 80, 10, _root, 0, 51);
+            _root.hline(0, 0, 80, TCODBackgroundFlag.Set);
+            _root.setBackgroundColor(TCODColor.amber);
+            _root.setForegroundColor(TCODColor.amber);
+            _root.hline(0, 0, lightLenght, TCODBackgroundFlag.Set);
             TCODConsole.flush();
         }
 
@@ -81,12 +85,12 @@ namespace Lights_Out
             } while (!endturn && ! Exit);
             if (!Exit)
             {
-                map.Update();
+                Map.Update();
                 Draw();
-                if (map.IntensityAt(player.posX, player.posY) == 0)
-                    if (turnInDark == 3)
+                if (Map.IntensityAt(_player.PosX, _player.PosY) == 0)
+                    if (_turnInDark == 3)
                         Exit = true;
-                    else turnInDark++;
+                    else _turnInDark++;
             }
         }
 
@@ -99,38 +103,38 @@ namespace Lights_Out
                 case TCODKeyCode.KeypadZero:
                     break;
                 case TCODKeyCode.KeypadOne:
-                    player.Move(-1, 1);
+                    _player.Move(-1, 1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadTwo:
-                    player.Move(0, 1);
+                    _player.Move(0, 1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadThree:
-                    player.Move(1, 1);
+                    _player.Move(1, 1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadFour:
-                    player.Move(-1, 0);
+                    _player.Move(-1, 0);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadFive:
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadSix:
-                    player.Move(1, 0);
+                    _player.Move(1, 0);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadSeven:
-                    player.Move(-1, -1);
+                    _player.Move(-1, -1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadEight:
-                    player.Move(0, -1);
+                    _player.Move(0, -1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadNine:
-                    player.Move(1, -1);
+                    _player.Move(1, -1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.KeypadAdd:
@@ -147,19 +151,19 @@ namespace Lights_Out
                     endTurn = true;
                     break;
                 case TCODKeyCode.Left:
-                    player.Move(-1, 0);
+                    _player.Move(-1, 0);
                     endTurn = true;
                     break;
                 case TCODKeyCode.Right:
-                    player.Move(1, 0);
+                    _player.Move(1, 0);
                     endTurn = true;
                     break;
                 case TCODKeyCode.Up:
-                    player.Move(0, -1);
+                    _player.Move(0, -1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.Down:
-                    player.Move(0, 1);
+                    _player.Move(0, 1);
                     endTurn = true;
                     break;
                 case TCODKeyCode.Alt:
@@ -255,8 +259,6 @@ namespace Lights_Out
                     break;
                 case TCODKeyCode.Zero:
                     break;
-                default:
-                    break;
             }
             #endregion
 
@@ -265,35 +267,35 @@ namespace Lights_Out
             {
                 #region Movement
                 case 'h':
-                    player.Move(-1, 0);
+                    _player.Move(-1, 0);
                     endTurn = true;
                     break;
                 case 'j':
-                    player.Move(0, 1);
+                    _player.Move(0, 1);
                     endTurn = true;
                     break;
                 case 'k':
-                    player.Move(0, -1);
+                    _player.Move(0, -1);
                     endTurn = true;
                     break;
                 case 'l':
-                    player.Move(1, 0);
+                    _player.Move(1, 0);
                     endTurn = true;
                     break;
                 case 'y':
-                    player.Move(-1, -1);
+                    _player.Move(-1, -1);
                     endTurn = true;
                     break;
                 case 'u':
-                    player.Move(1, -1);
+                    _player.Move(1, -1);
                     endTurn = true;
                     break;
                 case 'b':
-                    player.Move(-1, 1);
+                    _player.Move(-1, 1);
                     endTurn = true;
                     break;
                 case 'n':
-                    player.Move(1, 1);
+                    _player.Move(1, 1);
                     endTurn = true;
                     break;
                 case '.':
@@ -301,69 +303,67 @@ namespace Lights_Out
                     break;
                 #endregion
                 case 'd':
-                    player.Inventory.Draw(root);
+                    _player.Inventory.Draw(_root);
                     TCODConsole.flush();
                     key = TCODConsole.waitForKeypress(true);
-                    Item i = player.Inventory.GetAtLetter(key.Character);
-                    player.Inventory.RemoveAtLetter(key.Character, 1);
+                    Item i = _player.Inventory.GetAtLetter(key.Character);
+                    _player.Inventory.RemoveAtLetter(key.Character, 1);
                     if (i != null)
                     {
-                        i.Drop(player.posX, player.posY, map);
+                        i.Drop(_player.PosX, _player.PosY, Map);
                     }
                     break;
                 case 'g':
-                    foreach (Item item in map.GetItemsAt(player.posX, player.posY))
+                    foreach (Item item in Map.GetItemsAt(_player.PosX, _player.PosY))
                     {
                         item.Get();
-                        player.Inventory.Add(item);
-                        endTurn = true;
+                        _player.Inventory.Add(item);
                     }
                     endTurn = true;
                     break;
                 case 'i':
-                    player.Inventory.Draw(root);
+                    _player.Inventory.Draw(_root);
                     TCODConsole.flush();
                     TCODConsole.waitForKeypress(true);
                     break;
                 case 'e':
-                    player.Inventory.Draw(root);
+                    _player.Inventory.Draw(_root);
                     TCODConsole.flush();
                     key = TCODConsole.waitForKeypress(true);
-                    i = player.Inventory.GetAtLetter(key.Character);
+                    i = _player.Inventory.GetAtLetter(key.Character);
                     if (i != null)
                     {
-                        player.Equip(i);
-                        endTurn = true;
+                        _player.Equip(i);
                     }
                     endTurn = true;
                     break;
                 case 'r':
-                    player.Inventory.Draw(root);
+                    _player.Inventory.Draw(_root);
                     TCODConsole.flush();
                     key = TCODConsole.waitForKeypress(true);
-                    i = player.Inventory.GetAtLetter(key.Character);
+                    i = _player.Inventory.GetAtLetter(key.Character);
                     if (i != null)
                     {
                         i.Use();
-                        player.Inventory.RemoveAllAtLetter(key.Character);
+                        _player.Inventory.RemoveAllAtLetter(key.Character);
                         endTurn = true;
                     }
                     break;
                 case '>':
-                    if (player.posX == map.Stair.PosX && player.posY == map.Stair.PosY)
+                    if (_player.PosX == Map.Stair.PosX && _player.PosY == Map.Stair.PosY)
                     {
-                        dungeon.GoToMap(dungeon.CurrentDepth + 1, player);
-                        for (int n = map.CurrentMonsterNum; n < map.maxMonster; n++)
+                        _dungeon.GoToMap(_dungeon.CurrentDepth + 1, _player);
+                        for (int n = Map.CurrentMonsterNum; n < Map.MaxMonster; n++)
                         {
-                            AddMonster(map);
+                            AddMonster(Map);
                         }
                     }
                     break;
                 case '<':
-                    if (player.posX == map.StartPosX && player.posY == map.StartPosY)
+                    if (_player.PosX == Map.StartPosX && _player.PosY == Map.StartPosY)
                     {
-                        if (!(dungeon.CurrentDepth == 1))
-                            dungeon.GoToMap(dungeon.CurrentDepth - 1, player);
+                        if (_dungeon.CurrentDepth != 1)
+                            _dungeon.GoToMap(_dungeon.CurrentDepth - 1, _player);
                         else
                         {
                             Messages.AddMessage("If you go up, you'll exit the Dungeon. Are you sure?");
@@ -385,9 +385,11 @@ namespace Lights_Out
                 case 'z':
                     MonsterDamage = !MonsterDamage;
                     break;
-                default:
+                case 'q':
+                    InfiniteTorch = !InfiniteTorch;
                     break;
-                #endregion
+
+                    #endregion
             }
             #endregion
             return endTurn;

@@ -5,43 +5,40 @@ namespace Lights_Out
 {
     public class Light
     {
-        int posX, posY;
-        int intensity;
-        int radius;
-        int capacity;
-        float coef;
-        Map currentMap;
-        TCODMap tcodmap;
-        int elapsed;
+        readonly int _intensity;
+        readonly int _radius;
+        readonly int _capacity;
+        readonly float _coef;
+        Map _currentMap;
+        TCODMap _tcodmap;
+        int _elapsed;
 
-        bool isOnMap;
+        bool _isOnMap;
 
-        TCODColor color;
+        readonly TCODColor _color;
         public TCODColor Color
-        { get { return color; } }
+        { get { return _color; } }
 
-        DistanceFunc distanceFunc;
+        readonly DistanceFunc _distanceFunc;
 
-        public int PosX
-        { get { return posX; } }
+        public int PosX { get; private set; }
 
-        public int PosY
-        { get { return posY; } }
+        public int PosY { get; private set; }
 
 
         public float Used
-        { get { return (float)elapsed / capacity; } }
+        { get { return (float)_elapsed / _capacity; } }
 
         public Light(int intensity, int radius, int capacity, TCODColor color)
         {
-            this.color = color;
-            this.intensity = intensity;
-            this.radius = radius;
-            this.capacity = capacity;
-            this.coef = (float)(-intensity) / radius;
+            _color = color;
+            _intensity = intensity;
+            _radius = radius;
+            _capacity = capacity;
+            _coef = (float)(-intensity) / radius;
 
-            elapsed = 0;
-            distanceFunc = Math.Distance_Euclide;
+            _elapsed = 0;
+            _distanceFunc = Math.Distance_Euclide;
         }
 
         public Light(int intensity, int radius, int capacity)
@@ -51,16 +48,14 @@ namespace Lights_Out
 
         public int IntensityAt(int x, int y)
         {
-            if (tcodmap.isInFov(x, y))
-            {
-                int dist = distanceFunc(x, y, posX, posY);
-                float mult = 1f;
-                if (capacity > 0)
-                    mult = 1f - (float)System.Math.Pow((float)elapsed / capacity, 2);
-                int ret = (int)((intensity + (int)(dist * coef)) * mult);
-                return (ret >= 0 ? ret : 0);
-            }
-            return 0;
+            if (!_tcodmap.isInFov(x, y))
+                return 0;
+            int dist = _distanceFunc(x, y, PosX, PosY);
+            float mult = 1f;
+            if (_capacity > 0)
+                mult = 1f - (float)System.Math.Pow((float)_elapsed / _capacity, 2);
+            int ret = (int)((_intensity + (int)(dist * _coef)) * mult);
+            return (ret >= 0 ? ret : 0);
         }
 
         public bool PlaceAt(int x, int y, Map map)
@@ -68,19 +63,19 @@ namespace Lights_Out
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
             {
-                if (!isOnMap || map != currentMap)
+                if (!_isOnMap || map != _currentMap)
                 {
-                    if (currentMap != null)
-                        currentMap.RemoveLight(this);
-                    currentMap = map;
+                    if (_currentMap != null)
+                        _currentMap.RemoveLight(this);
+                    _currentMap = map;
                     map.AddLight(this);
-                    tcodmap = new TCODMap(Map.MAP_WIDTH, Map.MAP_HEIGHT);
-                    tcodmap.copy(map.TCODMap);
+                    _tcodmap = new TCODMap(Map.MAP_WIDTH, Map.MAP_HEIGHT);
+                    _tcodmap.copy(map.TCODMap);
                 }
-                posX = x;
-                posY = y;
-                tcodmap.computeFov(posX, posY, radius, true);
-                isOnMap = true;
+                PosX = x;
+                PosY = y;
+                _tcodmap.computeFov(PosX, PosY, _radius, true);
+                _isOnMap = true;
 
                 return true;
             }
@@ -89,28 +84,28 @@ namespace Lights_Out
 
         public void Update()
         {
-            if (capacity >= 0)
+            if (_capacity >= 0 && !Game.InfiniteTorch)
             {
-                elapsed = System.Math.Min(elapsed + 1, capacity);
-                if (elapsed >= capacity)
-                    currentMap.RemoveLight(this);
+                _elapsed++;
+                if (_elapsed >= _capacity)
+                    _currentMap.RemoveLight(this);
             }
         }
 
 
         public void Use(int num)
         {
-            elapsed = System.Math.Min(elapsed + num, capacity);
+            _elapsed = System.Math.Min(_elapsed + num, _capacity);
         }
 
         public override string ToString()
         {
-            return String.Format("{0}:{1}:{2}/{3}", intensity, radius, elapsed, capacity);
+            return String.Format("{0}:{1}:{2}/{3}", _intensity, _radius, _elapsed, _capacity);
         }
 
         internal void RemoveFromMap()
         {
-            isOnMap = false;
+            _isOnMap = false;
         }
     }
 }

@@ -8,94 +8,94 @@ namespace Lights_Out
     {
         const int CAPACITY = 26;
 
-        struct InvStruct { public Item item; public int num; };
+        struct InvStruct { public Item Item; public int Num; };
 
-        InvStruct[] items;
-        SortedList<int, string> taken;
-        int firstFree;
-        Player client;
+        readonly InvStruct[] _items;
+        readonly SortedList<int, string> _taken;
+        int _firstFree;
+        readonly Player _client;
 
         public Inventory(Player client)
         {
-            this.client = client;
-            items = new InvStruct[CAPACITY];
-            taken = new SortedList<int,string>();
-            firstFree = 0;
+            _client = client;
+            _items = new InvStruct[CAPACITY];
+            _taken = new SortedList<int,string>();
+            _firstFree = 0;
         }
 
         public int CountAtLetter(char c)
         {
-            int pos = (int)c - 97;
-            if (taken.ContainsKey(pos))
-                return items[(int)c - 97].num;
+            int pos = c - 97;
+            if (_taken.ContainsKey(pos))
+                return _items[c - 97].Num;
             return 0;
         }
 
         public Item GetAtLetter(char c)
         {
 
-            int pos = (int)c - 97;
-            if (taken.ContainsKey(pos))
-                return items[(int)c - 97].item;
+            int pos = c - 97;
+            if (_taken.ContainsKey(pos))
+                return _items[c - 97].Item;
             return null;
         }
 
         public bool Add(Item item)
         {
-            item.SetMap(client.currentMap);
+            item.SetMap(_client.CurrentMap);
             if (item.Stack)
             {
-                int i = taken.IndexOfValue(item.Name);
+                int i = _taken.IndexOfValue(item.Name);
                 if (i != -1)
                 {
-                    items[i].num++;
+                    _items[i].Num++;
                     return true;
                 }
             }
 
-            if (firstFree == -1)
+            if (_firstFree == -1)
                 return false;
 
-            items[firstFree] = new InvStruct { item = item, num = 1 };
-            taken.Add(firstFree, item.Name);
+            _items[_firstFree] = new InvStruct { Item = item, Num = 1 };
+            _taken.Add(_firstFree, item.Name);
             do
-                firstFree++;
-            while (taken.ContainsKey(firstFree));
-            if (firstFree == 26)
-                firstFree = -1;
+                _firstFree++;
+            while (_taken.ContainsKey(_firstFree));
+            if (_firstFree == 26)
+                _firstFree = -1;
             return true;
         }
 
         public void RemoveAtLetter(char c, int num)
         {
-            int pos = (int)c - 97;
+            int pos = c - 97;
             if (pos >= 0 && pos < 26)
             {
-                items[pos].num -= num;
-                if (items[pos].num <= 0)
+                _items[pos].Num -= num;
+                if (_items[pos].Num <= 0)
                 {
-                    taken.Remove(pos);
-                    if (pos < firstFree && pos >= 0)
-                        firstFree = pos;
+                    _taken.Remove(pos);
+                    if (pos < _firstFree && pos >= 0)
+                        _firstFree = pos;
                 }
             }
         }
 
         public void RemoveAllAtLetter(char c)
         {
-            int pos = (int)c - 97;
-            taken.Remove(pos);
-            if (pos < firstFree && pos >= 0)
-                firstFree = pos;
+            int pos = c - 97;
+            _taken.Remove(pos);
+            if (pos < _firstFree && pos >= 0)
+                _firstFree = pos;
         }
 
         public void Draw(TCODConsole cons)
         {
             TCODConsole temp = new TCODConsole(50, 30);
             int x = 2;
-            foreach (int i in taken.Keys)
+            foreach (int i in _taken.Keys)
             {
-                temp.print(2, x, String.Format("{0} - {1}", (char)(i + 97), items[i].item.ToString()));
+                temp.print(2, x, String.Format("{0} - {1}", (char)(i + 97), _items[i].Item));
                 x++;
             }
             TCODConsole.blit(temp, 0, 0, 50, x + 2, cons, 0, 0);

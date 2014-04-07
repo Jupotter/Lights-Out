@@ -6,47 +6,47 @@ namespace Lights_Out
     {
         const int MAX_DEPTH = 10;
 
-        Game game;
+        readonly Game _game;
 
-        List<Map> mapList;
-        int depth;
-        int currentDepth;
+        readonly List<Map> _mapList;
+        int _depth;
+        int _currentDepth;
         public int CurrentDepth
         {
-            get { return currentDepth; }
-            set { if (value <= depth) currentDepth = value; }
+            get { return _currentDepth; }
+            set { if (value <= _depth) _currentDepth = value; }
         }
         public Map CurrentLevel
-        { get { return mapList[currentDepth - 1]; } }
+        { get { return _mapList[_currentDepth - 1]; } }
 
-        MapGen gen;
+        readonly MapGen _gen;
 
         public MapGen Gen
         {
-            get { return gen; }
+            get { return _gen; }
         }
 
         public Dungeon(Game game)
         {
-            gen = new MapGen();
-            this.game = game;
-            mapList = new List<Map>();
-            depth = 0;
-            currentDepth = 0;
+            _gen = new MapGen();
+            _game = game;
+            _mapList = new List<Map>();
+            _depth = 0;
+            _currentDepth = 0;
         }
 
         public bool GoToMap(int lvl, Player pl)
         {
-            if (lvl > depth + 1 || (lvl == depth + 1 && !GenNewLevel()))
+            if (lvl > _depth + 1 || (lvl == _depth + 1 && !GenNewLevel()))
                 return false;
-            if (lvl > currentDepth)
+            if (lvl > _currentDepth)
             {
-                currentDepth = lvl;
+                _currentDepth = lvl;
                 pl.PlaceAt(CurrentLevel.StartPosX, CurrentLevel.StartPosY, CurrentLevel);
             }
             else
             {
-                currentDepth = lvl;
+                _currentDepth = lvl;
                 pl.PlaceAt(CurrentLevel.Stair.PosX, CurrentLevel.Stair.PosY, CurrentLevel);
             }
             return true;
@@ -54,13 +54,13 @@ namespace Lights_Out
 
         public bool GenNewLevel()
         {
-            if (depth <= MAX_DEPTH)
+            if (_depth <= MAX_DEPTH)
             {
                 Map map;
-                gen.Generate(5, out map, game);
-                map.maxMonster = 3 * depth + 5;
-                mapList.Add(map);
-                depth++;
+                _gen.Generate(5, out map, _game);
+                map.MaxMonster = 3 * _depth + 5;
+                _mapList.Add(map);
+                _depth++;
                 return true;
             }
             return false;

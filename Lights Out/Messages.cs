@@ -1,43 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using libtcod;
 
 namespace Lights_Out
 {
     class Messages
     {
-        static List<string> messages;
-		int lines;
-        TCODConsole console;
+        static private readonly List<string> _messages;
+        readonly int _lines;
+        readonly TCODConsole _console;
         public TCODConsole Console
-        { get { return console; } }
+        { get { return _console; } }
 
         static Messages()
         {
-            messages = new List<string>();
+            _messages = new List<string>();
         }
 
-		public Messages(TCODConsole cons)
-		{
-            console = cons;
-            lines = cons.getHeight();
-		}
-		
-		public void Draw()
-		{
-			console.rect(0, 0, 80, lines, true);
-			int size = messages.Count;
-			for (int i = 0; i < System.Math.Min(lines, size); i++)
-			{
-				this.console.print(0,lines-i-1,messages[size-i-1]);
-			}
-		}
-		
-		public static void AddMessage(string msg)
-		{
-			messages.Add(msg);
-		}
+        public Messages(TCODConsole cons)
+        {
+            _console = cons;
+            _lines = cons.getHeight();
+        }
+
+        public void Draw()
+        {
+            _console.rect(0, 0, 80, _lines, true);
+            int size = _messages.Count;
+            for (int i = 0; i < System.Math.Min(_lines, size); i++)
+            {
+                _console.print(0, _lines - i - 1, _messages[size - i - 1]);
+            }
+        }
+
+        public static void AddMessage(string msg)
+        {
+            _messages.Add(msg);
+        }
     }
 }

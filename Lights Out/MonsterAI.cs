@@ -3,43 +3,43 @@ namespace Lights_Out
 {
     class MonsterAI
     {
-        Dijkstra map;
-        Map source;
-        Monster client;
+        Dijkstra _map;
+        Map _source;
+        readonly Monster _client;
 
         public MonsterAI(Monster client)
         {
-            this.client = client;
+            _client = client;
         }
 
         public void SetMap(Map map)
         {
-            this.source = map;
-            this.map = map.Dijkstra;
+            _source = map;
+            _map = map.Dijkstra;
         }
 
         public void Act()
         {
             if (Game.MonsterAI)
             {
-                intCouple next = map.GetNext(client.posX, client.posY);
+                IntCouple next = _map.GetNext(_client.PosX, _client.PosY);
 
-                if (source.Player.posX == next.X && source.Player.posY == next.Y)
+                if (_source.Player.PosX == next.X && _source.Player.PosY == next.Y)
                 {
-                    source.Player.Light.Use(10);
+                    _source.Player.Light.Use(10);
                 }
                 else
                 {
-                    Light light = source.ContainLight(next.X, next.Y);
+                    Light light = _source.ContainLight(next.X, next.Y);
                     if (light != null)
                     {
                         light.Use(10);
                     }
                     else
                     {
-                        Monster mons = source.ContainMonster(next.X, next.Y);
+                        Monster mons = _source.ContainMonster(next.X, next.Y);
                         if (mons == null)
-                            client.PlaceAt(next.X, next.Y, client.currentMap);
+                            _client.PlaceAt(next.X, next.Y, _client.CurrentMap);
                     }
                 }
             }

@@ -9,68 +9,63 @@ namespace Lights_Out
     public class Item
     {
         public ItemState State;
-        protected bool isLight;
-        public bool IsLight
-        { get { return isLight; } }
-        bool lightOn;
-        public bool LightOn
-        { get { return lightOn; } }
-        
-        Light light;
-        public Light Light
-        { get { return light; } }
+        public bool IsLight { get; protected set; }
 
-        protected Map map;
+        public bool LightOn { get; private set; }
 
-        char tile;
-        int posX, posY;
-        TCODColor color;
+        public Light Light { get; private set; }
 
-        public int PosX
-        { get { return posX; } }
-        public int PosY
-        { get { return posY; } }
+        protected Map Map;
+
+        readonly char _tile;
+        TCODColor _color;
+
+        public int PosX { get; private set; }
+
+        public int PosY { get; private set; }
+
         public char Tile
-        { get { return tile; } }
+        { get { return _tile; } }
         public TCODColor Color
         {
-            get { return color == null ? TCODColor.white : color; }
-            set { color = value; }
+            get { return _color ?? TCODColor.white; }
+            set { _color = value; }
         }
 
-        string name;
+        readonly string _name;
         public string Name
-        { get { return name; } }
-        bool stack;
+        { get { return _name; } }
+
+        readonly bool _stack;
         public bool Stack
-        { get { return stack; } }
+        { get { return _stack; } }
 
         public Item(string name, char tile,bool stack)
         {
-            this.name = name;
-            this.tile = tile;
-            this.stack = stack;
-            isLight = false;
-            lightOn = false;
+            _name = name;
+            _tile = tile;
+            _stack = stack;
+            IsLight = false;
+            LightOn = false;
         }
 
         public void SetMap(Map map)
         {
-            this.map = map;
+            Map = map;
         }
 
         public void SetLight(Light light)
         {
-            this.light = light;
-            isLight = true;
-            lightOn = true;
+            Light = light;
+            IsLight = true;
+            LightOn = true;
         }
 
         public virtual void SwitchLight(bool on)
         {
-            if (this.isLight)
+            if (IsLight)
             {
-                lightOn = on;
+                LightOn = on;
             }
         }
 
@@ -79,13 +74,13 @@ namespace Lights_Out
             if (x >= 0 && x < Map.MAP_WIDTH
                 && y >= 0 && y < Map.MAP_HEIGHT)
             {
-                posX = x;
-                posY = y;
-                this.map = map;
-                this.State = ItemState.Dropped;
+                PosX = x;
+                PosY = y;
+                Map = map;
+                State = ItemState.Dropped;
                 map.AddItem(this);
-                if (isLight && lightOn)
-                    light.PlaceAt(x, y, map);
+                if (IsLight && LightOn)
+                    Light.PlaceAt(x, y, map);
                 return true;
             }
             return false;
@@ -93,29 +88,28 @@ namespace Lights_Out
 
         public virtual void Get()
         {
-            this.State = ItemState.Held;
-            map.RemoveItem(this);
-            if (isLight)
-                map.RemoveLight(light);
+            State = ItemState.Held;
+            Map.RemoveItem(this);
+            if (IsLight)
+                Map.RemoveLight(Light);
         }
 
         public void Draw(TCODConsole cons)
         {
-            cons.putChar(posX, posY, (int)tile);
-            cons.setCharForeground(posX, posY, Color);
+            cons.putChar(PosX, PosY, _tile);
+            cons.setCharForeground(PosX, PosY, Color);
         }
 
         public override string ToString()
         {
             string plus = "";
-            if (isLight)
-                plus = String.Format(" ({0})", light.ToString());
-            return String.Format("{0}{1}", name, plus);
+            if (IsLight)
+                plus = String.Format(" ({0})", Light);
+            return String.Format("{0}{1}", _name, plus);
         }
 
         public virtual void Use()
         {
-            return;
         }
     }
 }
