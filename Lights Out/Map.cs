@@ -12,7 +12,8 @@ namespace Lights_Out
         readonly Game _game;
         Stairs _stair;
         public int MaxMonster;
-        public int CurrentMonsterNum { get; private set; }
+
+        private int _currentMonsterNum;
 
         public Stairs Stair
         {
@@ -38,7 +39,7 @@ namespace Lights_Out
 
         public Map(Game game)
         {
-            CurrentMonsterNum = 0;
+            _currentMonsterNum = 0;
             _game = game;
 
             MaxMonster = 10;
@@ -258,9 +259,9 @@ namespace Lights_Out
 
         public void AddCreature(Monster monster)
         {
-            if (CurrentMonsterNum <= MaxMonster)
+            if (_currentMonsterNum <= MaxMonster)
             {
-                CurrentMonsterNum += 1;
+                _currentMonsterNum += 1;
                 _monsters.Add(monster);
             }
         }
@@ -268,7 +269,7 @@ namespace Lights_Out
         public void RemoveCreature(Monster monster)
         {
             _dead.Add(monster);
-            CurrentMonsterNum -= 1;
+            _currentMonsterNum -= 1;
         }
 
         public bool this[int x, int y]
