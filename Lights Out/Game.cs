@@ -12,6 +12,8 @@ namespace Lights_Out
 // ReSharper restore InconsistentNaming
 
         readonly Dungeon _dungeon;
+
+        private Map Map { get { return _dungeon.CurrentLevel; } }
         Map Map { get { return _dungeon.CurrentLevel; } }
         readonly Player _player;
         readonly TCODConsole _root = TCODConsole.root;
@@ -59,7 +61,7 @@ namespace Lights_Out
 
         public void Draw()
         {
-            int lightLenght = (int)((1-_player.Light.Used) * 80);
+            int lightLenght = (int)((1 - _player.Light.Used) * 80);
 
             _root.setBackgroundColor(TCODColor.black);
             _root.setForegroundColor(TCODColor.white);
@@ -82,7 +84,7 @@ namespace Lights_Out
                 TCODKey key = TCODConsole.waitForKeypress(true);
                 endturn = HandleKeyPress(key);
                 Draw();
-            } while (!endturn && ! Exit);
+            } while (!endturn && !Exit);
             if (!Exit)
             {
                 Map.Update();
@@ -90,7 +92,8 @@ namespace Lights_Out
                 if (Map.IntensityAt(_player.PosX, _player.PosY) == 0)
                     if (_turnInDark == 3)
                         Exit = true;
-                    else _turnInDark++;
+                    else
+                        _turnInDark++;
             }
         }
 
