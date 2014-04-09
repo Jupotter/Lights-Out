@@ -10,3 +10,5 @@ obj/
 *.bak
 *.orig
 *.7z
+
+packages/
