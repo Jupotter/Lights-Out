@@ -14,7 +14,6 @@ namespace Lights_Out
         readonly Dungeon _dungeon;
 
         private Map Map { get { return _dungeon.CurrentLevel; } }
-        Map Map { get { return _dungeon.CurrentLevel; } }
         readonly Player _player;
         readonly TCODConsole _root = TCODConsole.root;
         MapGen Gen { get { return _dungeon.Gen; } }
