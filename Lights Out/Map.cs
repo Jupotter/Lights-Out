@@ -36,6 +36,11 @@ namespace Lights_Out
 
         public Dijkstra Dijkstra { get; private set; }
 
+        public int CurrentMonsterNum
+        {
+            get { return _currentMonsterNum; }
+        }
+
 
         public Map(Game game)
         {
@@ -259,9 +264,9 @@ namespace Lights_Out
 
         public void AddCreature(Monster monster)
         {
-            if (_currentMonsterNum <= MaxMonster)
+            if (CurrentMonsterNum <= MaxMonster)
             {
-                _currentMonsterNum += 1;
+                _currentMonsterNum = CurrentMonsterNum + 1;
                 _monsters.Add(monster);
             }
         }
@@ -269,7 +274,7 @@ namespace Lights_Out
         public void RemoveCreature(Monster monster)
         {
             _dead.Add(monster);
-            _currentMonsterNum -= 1;
+            _currentMonsterNum = CurrentMonsterNum - 1;
         }
 
         public bool this[int x, int y]
